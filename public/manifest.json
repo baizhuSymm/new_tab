@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "拾页 · 个人新标签页",
+  "description": "你的常用网站、待办和随手记录。数据保存在本地。",
+  "version": "0.1.0",
+  "permissions": ["storage"],
+  "optional_host_permissions": ["https://api.open-meteo.com/*", "https://geocoding-api.open-meteo.com/*"],
+  "chrome_url_overrides": { "newtab": "index.html" },
+  "icons": { "128": "icon/icon.png" },
+  "content_security_policy": { "extension_pages": "script-src 'self'; object-src 'self'" }
+}
