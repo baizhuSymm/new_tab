@@ -1,4 +1,7 @@
-export type StorageChanges = Record<string, { oldValue?: unknown; newValue?: unknown }>;
+export type StorageChanges = Record<
+  string,
+  { oldValue?: unknown; newValue?: unknown }
+>;
 export interface StorageAdapter {
   readAll(): Promise<Record<string, unknown>>;
   write(values: Record<string, unknown>): Promise<void>;

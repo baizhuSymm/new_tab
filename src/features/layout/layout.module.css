@@ -1,0 +1,81 @@
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  column-gap: 30px;
+}
+.column {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+.left {
+  padding-right: 30px;
+  border-right: 1px solid var(--line);
+}
+.full {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--line);
+  padding-top: 28px;
+  margin-top: 30px;
+}
+.module {
+  min-width: 0;
+  position: relative;
+}
+.editColumn {
+  min-height: 100px;
+  border: 1px dashed #b5cbbb;
+  padding: 12px;
+}
+.over {
+  background: #f1f7f1;
+}
+.editModule {
+  outline: 1px solid #bed4c6;
+  padding: 10px;
+  background: #fff;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  padding-bottom: 12px;
+  font-size: 12px;
+}
+.controls > span {
+  flex: 1;
+}
+.controls select {
+  width: 68px;
+  padding: 4px;
+  font-size: 12px;
+}
+.controls > button:first-child {
+  touch-action: none;
+  cursor: grab;
+}
+.disabled {
+  pointer-events: none;
+  opacity: 0.55;
+}
+.hidden {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+@media (max-width: 950px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .left {
+    padding-right: 0;
+    border-right: 0;
+  }
+  .full {
+    margin-top: 0;
+  }
+}

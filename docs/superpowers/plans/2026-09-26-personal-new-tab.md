@@ -12,7 +12,9 @@
 
 **Visual Target:** [第三张设计图](../specs/assets/selected-concept.png)
 
-**状态：** 计划已编写，等待审阅及执行方式选择；所有实施步骤均未执行。
+**状态：** 用户已批准主代理顺序执行与独立审查。2026-09-27：任务 1–10 已实现，任务 11 的网页验证、构建、文档已执行；完整 Chromium 扩展自动化受本机 Windows SideBySide 错误阻塞，Chrome/Edge 手动加载仍待确认。详细执行证据见 `docs/verification.md`。下方步骤保留为原批准计划，不将环境受阻项标成完成。
+
+**执行调整：** 为便于复用，部分组件/测试合并在功能目录文件内；语义测试集中于 `storage`、`notes` 与 Playwright 套件。任务 1–2 合并基础提交，其余跨模块修复在浏览器回归后统一提交。没有引入 WXT、后端、在线图标请求或生产演示数据。
 
 ## Global Constraints
 

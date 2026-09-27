@@ -1,0 +1,41 @@
+.preview {
+  width: 100%;
+  aspect-ratio: 3 / 1;
+  object-fit: cover;
+  border-radius: 5px;
+}
+.choices {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.choices button,
+.upload {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.choices button[aria-pressed="true"] {
+  border-color: #4b8a68;
+  color: var(--green);
+  background: #f0f7f1;
+}
+.upload {
+  position: relative;
+  border: 1px dashed #a8bcb0;
+  border-radius: 5px;
+  padding: 9px 12px;
+  cursor: pointer;
+}
+.upload input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  cursor: pointer;
+}
+.upload:focus-within {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
