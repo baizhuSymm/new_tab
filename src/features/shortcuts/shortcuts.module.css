@@ -1,58 +1,69 @@
 .grid {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  column-gap: 12px;
-  row-gap: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
 }
 .tile {
   position: relative;
   min-width: 0;
+  flex: 0 0 78px;
+  width: 78px;
+  margin: 10px;
 }
 .site {
   display: flex;
-  width: 100%;
-  min-height: 116px;
-  padding: 10px 2px;
+  width: 78px;
+  min-height: 0;
+  padding: 15px;
   flex-direction: column;
   align-items: center;
   background: transparent;
   border: 0;
-  gap: 7px;
+  gap: 4px;
+  touch-action: manipulation;
+  cursor: grab;
 }
 .logo {
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 3px;
 }
 .name {
-  max-width: 100%;
+  width: 78px;
+  max-width: none;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 14px;
 }
-.site small {
-  font-size: 13px;
-  max-width: 100%;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+.tile > .editSite,
+.tile > .deleteSite {
+  position: absolute;
+  top: 5px;
+  width: 20px;
+  height: 20px;
+  padding: 3px;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  transition: background-color 120ms ease;
 }
-.tileTools {
-  display: flex;
-  justify-content: center;
+.tile > .editSite:hover,
+.tile > .editSite:focus-visible {
+  background: rgba(76, 86, 80, 0.12);
 }
-.tileTools button {
-  width: 26px;
-  height: 27px;
-  padding: 4px;
+.tile > .deleteSite:hover,
+.tile > .deleteSite:focus-visible {
+  background: rgba(182, 66, 66, 0.12);
 }
-.tileTools button:first-child {
-  touch-action: none;
-  cursor: grab;
+.editSite {
+  left: 5px;
+}
+.deleteSite {
+  right: 5px;
+  color: #b64242;
 }
 .groupSelect {
   width: auto;
@@ -66,19 +77,8 @@
   background: #edf4ef;
   border-radius: 6px;
 }
-@media (max-width: 1100px) {
-  .grid {
-    column-gap: 4px;
-  }
-}
 @media (max-width: 680px) {
   .grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    row-gap: 14px;
-  }
-}
-@media (max-width: 360px) {
-  .grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-content: space-around;
   }
 }

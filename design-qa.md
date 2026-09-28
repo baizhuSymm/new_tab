@@ -44,3 +44,14 @@ final result: passed
 已测试鼠标/键盘排序、跨栏移动、无效区域放下取消、隐藏与恢复、保存与取消、导航往返、弹层焦点、手机面板、文件上传、离线编辑、跨标签同步。
 
 附加截图：`docs/qa/settings-mobile.png`、`docs/qa/layout-mobile.png`。截图套件监听 pageerror，结果为空；浏览器扩展控制台与 CSP 未通过实际安装验证，不能从网页结果推断。
+
+## AI 工具入口补充验收
+
+- Product Design 参考：OpenClaw 图标入口位于搜索下方，展开后对话区域仍在快捷网站上方。
+- 实际截图：`docs/qa/ai-tools-closed-894.png`、`docs/qa/ai-tools-open-1044.png`、`docs/qa/ai-tools-open-390.png`。
+- 默认收起；点击入口展开，关闭按钮可收起；快捷网站维持在其下方。
+- 桌面和 390px 视口均无横向溢出。
+- 由于本机 OpenClaw Gateway 当前返回 HTTP 503（Control UI 资源未构建），展开区使用未连接空状态，不显示伪造消息。
+- P2 后续：配置 Gateway WebSocket 鉴权与设备配对后，再启用消息输入与会话。
+
+final result: passed

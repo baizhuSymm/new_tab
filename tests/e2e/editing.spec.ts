@@ -3,12 +3,11 @@ test("pointer sorting persists site order and module moves; outside drop cancels
   page,
 }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "网站管理", exact: true }).click();
   const from = await page
-    .getByRole("button", { name: "拖动 Google", exact: true })
+    .getByRole("button", { name: "Google", exact: true })
     .boundingBox();
   const to = await page
-    .getByRole("button", { name: "拖动 YouTube", exact: true })
+    .getByRole("button", { name: "YouTube", exact: true })
     .boundingBox();
   await page.mouse.move(from!.x + 10, from!.y + 10);
   await page.mouse.down();

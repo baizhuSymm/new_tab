@@ -34,7 +34,7 @@ test("first installation is empty, dialogs trap focus and restore it", async ({
 });
 test("shortcut CRUD, groups, order and persistence", async ({ page }) => {
   await ready(page);
-  await page.getByRole("button", { name: "网站管理", exact: true }).click();
+  await page.getByRole("button", { name: "整理网站", exact: true }).click();
   await page.getByRole("button", { name: "新增分组" }).click();
   await page.getByLabel("分组名称").fill("工作");
   await page.getByRole("button", { name: "创建分组" }).click();
@@ -49,8 +49,7 @@ test("shortcut CRUD, groups, order and persistence", async ({ page }) => {
     page.getByRole("button", { name: /我的项目/ }).first(),
   ).toBeVisible();
   await page
-    .getByRole("button", { name: /我的项目/ })
-    .first()
+    .getByRole("button", { name: "编辑 我的项目", exact: true })
     .click();
   await page.getByLabel("网站名称").fill("更新的项目");
   await page

@@ -1,5 +1,5 @@
 export type SearchEngine = "bing" | "baidu" | "google";
-export type AppView = "home" | "shortcuts" | "tasks" | "notes";
+export type AppView = "home" | "tasks" | "notes";
 export type ModuleId = "shortcuts" | "tasks" | "notes" | "recent";
 export type LayoutColumn = "left" | "right" | "full";
 export interface Shortcut {

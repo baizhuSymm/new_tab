@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   Settings,
   House,
-  Bookmark,
   SquareCheck,
   StickyNote,
   Image as ImageIcon,
@@ -15,6 +14,7 @@ import { AppProvider, useAppData } from "./AppProvider";
 import { IconButton } from "../ui/IconButton";
 import type { AppView, Layout, Shortcut } from "../domain/types";
 import { SearchBar } from "../features/search/SearchBar";
+import { AiTools } from "../features/ai-tools/AiTools";
 import { openDestination } from "../features/search/navigation";
 import { ShortcutGrid } from "../features/shortcuts/ShortcutGrid";
 import { TaskPanel } from "../features/tasks/TaskPanel";
@@ -79,7 +79,6 @@ function Shell() {
       : "./wallpapers/city-panorama.png";
   const nav = [
     { id: "home", label: "首页", icon: House },
-    { id: "shortcuts", label: "网站管理", icon: Bookmark },
     { id: "tasks", label: "待办管理", icon: SquareCheck },
     { id: "notes", label: "便签管理", icon: StickyNote },
   ] as const;
@@ -150,6 +149,7 @@ function Shell() {
         </header>
         <div className={styles.content}>
           <SearchBar onOpen={open} />
+          {view === "home" && <AiTools />}
           {error && (
             <div className={styles.error} role="alert">
               <span>保存或读取失败：{error}</span>
@@ -208,9 +208,7 @@ function Shell() {
               </ModuleGrid>
             ) : (
               <div className={styles.management}>
-                {view === "shortcuts" ? (
-                  <ShortcutGrid onOpen={open} management />
-                ) : view === "tasks" ? (
+                {view === "tasks" ? (
                   <TaskPanel management />
                 ) : (
                   <QuickNote note={note} management />
@@ -218,10 +216,6 @@ function Shell() {
               </div>
             )}
           </div>
-          <footer className={styles.footer}>
-            <span>拾页</span>
-            <span>把日常，放在顺手的地方。</span>
-          </footer>
         </div>
       </main>
       {panel === "settings" && (

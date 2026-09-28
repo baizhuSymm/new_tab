@@ -58,7 +58,7 @@
 }
 .hero {
   position: relative;
-  height: 326px;
+  height: clamp(220px, 33vh, 440px);
 }
 .wallpaper {
   width: 100%;
@@ -96,12 +96,13 @@
 }
 .content {
   position: relative;
-  width: 90%;
+  width: 94%;
   max-width: 1450px;
   margin: -24px auto 0;
+  padding-bottom: 24px;
 }
 .body {
-  padding-top: 38px;
+  padding-top: 0;
   min-height: 460px;
 }
 .management {
@@ -144,24 +145,9 @@
   margin-top: 16px;
   border-radius: 4px;
 }
-.footer {
-  padding: 28px 0 18px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 10px;
-  color: #a4b0a7;
-}
-@media (min-width: 1600px) {
-  .hero {
-    height: 350px;
-  }
-}
 @media (max-width: 1100px) {
-  .hero {
-    height: 275px;
-  }
   .content {
-    width: 92%;
+    width: 94%;
   }
   .heroContent {
     padding: 36px 4%;
@@ -186,9 +172,6 @@
   .main {
     margin-left: 49px;
   }
-  .hero {
-    height: 216px;
-  }
   .heroContent {
     padding: 30px 16px;
   }
@@ -209,10 +192,7 @@
     margin-top: -24px;
   }
   .body {
-    padding-top: 26px;
-  }
-  .footer {
-    font-size: 9px;
+    padding-top: 0;
   }
   .editToolbar {
     flex-wrap: wrap;
@@ -227,8 +207,5 @@
   }
   .heroContent > div:last-child {
     max-width: 100px;
-  }
-  .footer > span:last-child {
-    display: none;
   }
 }

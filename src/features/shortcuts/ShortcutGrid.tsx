@@ -2,17 +2,15 @@ import { useState } from "react";
 import {
   Plus,
   Pencil,
-  Trash2,
-  GripVertical,
-  ArrowLeft,
-  ArrowRight,
-  Globe,
+  X,
+  Check,
   FolderPlus,
   ChevronDown,
 } from "lucide-react";
 import {
   DndContext,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   KeyboardSensor,
   useSensor,
   useSensors,
@@ -34,20 +32,14 @@ import { IconButton } from "../../ui/IconButton";
 import { SiteIcon } from "./SiteIcon";
 import styles from "./shortcuts.module.css";
 
-export function ShortcutGrid({
-  onOpen,
-  management = false,
-}: {
-  onOpen: (site: Shortcut) => void;
-  management?: boolean;
-}) {
+export function ShortcutGrid({ onOpen }: { onOpen: (site: Shortcut) => void }) {
   const { snapshot, repository, run } = useAppData();
   const [group, setGroup] = useState("default"),
     [editing, setEditing] = useState<Shortcut | "new" | null>(null),
     [organize, setOrganize] = useState(false),
     [groupDialog, setGroupDialog] = useState(false);
   const [groupName, setGroupName] = useState("");
-  const editMode = management || organize;
+  const editMode = organize;
   const activeGroup = snapshot.groups.some((g) => g.id === group)
     ? group
     : "default";
@@ -55,9 +47,17 @@ export function ShortcutGrid({
     .filter((s) => s.groupId === activeGroup)
     .sort((a, b) => a.order - b.order || a.id.localeCompare(b.id));
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 250, tolerance: 5 },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
+      keyboardCodes: {
+        start: ["Space"],
+        cancel: ["Escape"],
+        end: ["Space", "Enter", "Tab"],
+      },
     }),
   );
   async function reorder(from: number, to: number) {
@@ -77,7 +77,7 @@ export function ShortcutGrid({
   return (
     <section aria-label="快捷网站">
       <div className="section-heading">
-        <h2>{management ? "我的网站" : "常用"}</h2>
+        <h2>常用</h2>
         {snapshot.groups.length > 1 && (
           <select
             className={styles.groupSelect}
@@ -103,25 +103,29 @@ export function ShortcutGrid({
             </IconButton>
             {activeGroup !== "default" && (
               <IconButton label="删除分组" onClick={() => void deleteGroup()}>
-                <Trash2 size={16} />
+                <X size={16} />
               </IconButton>
             )}
           </>
         )}
-        {!management && (
-          <IconButton
-            label={organize ? "完成网站整理" : "整理网站"}
-            onClick={() => setOrganize(!organize)}
-          >
-            <Pencil size={16} />
-          </IconButton>
-        )}
+        <IconButton
+          label={organize ? "完成网站整理" : "整理网站"}
+          onClick={() => setOrganize(!organize)}
+        >
+          {organize ? <Check size={16} /> : <Pencil size={16} />}
+        </IconButton>
         <IconButton label="添加网站" onClick={() => setEditing("new")}>
           <Plus size={20} />
         </IconButton>
       </div>
       <DndContext
         sensors={sensors}
+        accessibility={{
+          screenReaderInstructions: {
+            draggable:
+              "按空格开始排序，方向键移动，再按空格完成，Escape 取消。未排序时按 Enter 打开网站。",
+          },
+        }}
         collisionDetection={closestCenter}
         onDragEnd={({ active, over }) => {
           if (over && active.id !== over.id)
@@ -136,14 +140,17 @@ export function ShortcutGrid({
           strategy={rectSortingStrategy}
         >
           <div className={styles.grid}>
-            {sites.map((site, index) => (
+            {sites.map((site) => (
               <SiteTile
                 key={site.id}
                 site={site}
                 editMode={editMode}
                 onOpen={() => onOpen(site)}
                 onEdit={() => setEditing(site)}
-                onMove={(delta) => void reorder(index, index + delta)}
+                onDelete={() => {
+                  if (confirm(`删除“${site.name}”？`))
+                    void run(() => repository.remove("shortcut", site.id));
+                }}
               />
             ))}
           </div>
@@ -201,58 +208,62 @@ function SiteTile({
   editMode,
   onOpen,
   onEdit,
-  onMove,
+  onDelete,
 }: {
   site: Shortcut;
   editMode: boolean;
   onOpen: () => void;
   onEdit: () => void;
-  onMove: (delta: number) => void;
+  onDelete: () => void;
 }) {
   const {
     setNodeRef,
+    setActivatorNodeRef,
     transform,
     transition,
     attributes,
     listeners,
     isDragging,
-  } = useSortable({ id: site.id, disabled: !editMode });
+  } = useSortable({ id: site.id });
   return (
     <div
       ref={setNodeRef}
+      data-site-id={site.id}
       className={`${styles.tile} ${isDragging ? styles.dragging : ""}`}
       style={{ transform: CSS.Transform.toString(transform), transition }}
     >
       <button
+        ref={setActivatorNodeRef}
+        {...attributes}
+        {...listeners}
         className={styles.site}
-        onClick={editMode ? onEdit : onOpen}
+        onClick={() => {
+          if (!isDragging && !editMode) onOpen();
+        }}
         title={site.url}
       >
         <span className={styles.logo}>
-          <SiteIcon name={site.icon} size={40} />
+          <SiteIcon name={site.icon} size={48} />
         </span>
         <span className={styles.name}>{site.name}</span>
-        <small>{categories[site.icon] ?? new URL(site.url).hostname}</small>
       </button>
       {editMode && (
-        <div className={styles.tileTools}>
-          <button
-            type="button"
-            className="icon-button"
-            {...attributes}
-            {...listeners}
-            aria-label={`拖动 ${site.name}`}
-            title="拖动排序"
+        <>
+          <IconButton
+            className={styles.editSite}
+            label={`编辑 ${site.name}`}
+            onClick={onEdit}
           >
-            <GripVertical size={14} />
-          </button>
-          <IconButton label={`前移 ${site.name}`} onClick={() => onMove(-1)}>
-            <ArrowLeft size={13} />
+            <Pencil size={14} />
           </IconButton>
-          <IconButton label={`后移 ${site.name}`} onClick={() => onMove(1)}>
-            <ArrowRight size={13} />
+          <IconButton
+            className={styles.deleteSite}
+            label={`删除 ${site.name}`}
+            onClick={onDelete}
+          >
+            <X size={14} />
           </IconButton>
-        </div>
+        </>
       )}
     </div>
   );
@@ -360,23 +371,3 @@ function ShortcutForm({
     </Dialog>
   );
 }
-const categories: Record<string, string> = {
-  google: "搜索",
-  youtube: "视频",
-  github: "代码",
-  notion: "笔记",
-  openai: "对话",
-  zhihu: "问答",
-  wechat: "社交",
-  xiaohongshu: "生活",
-  bilibili: "视频",
-  neteasecloudmusic: "音乐",
-  tencentqq: "文档",
-  lark: "协作",
-  gmail: "邮件",
-  googlecalendar: "日程",
-  baidu: "搜索",
-  taobao: "购物",
-  jd: "购物",
-  douban: "兴趣",
-};
