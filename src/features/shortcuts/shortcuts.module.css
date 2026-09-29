@@ -2,6 +2,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
+  row-gap: 8px;
 }
 .tile {
   position: relative;
@@ -41,7 +42,7 @@
 .tile > .editSite,
 .tile > .deleteSite {
   position: absolute;
-  top: 5px;
+  top: 15px;
   width: 20px;
   height: 20px;
   padding: 3px;
@@ -65,12 +66,26 @@
   right: 5px;
   color: #b64242;
 }
-.groupSelect {
-  width: auto;
-  max-width: 130px;
-  font-size: 13px;
-  padding: 5px;
+.groupTabs {
+  display: flex;
+  gap: 4px;
+  max-width: 100%;
+  margin: 0 10px 6px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.groupTab {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  color: var(--muted);
+  background: transparent;
   border: 0;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+.activeGroupTab {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
 }
 .dragging {
   z-index: 9;
