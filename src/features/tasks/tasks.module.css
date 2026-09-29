@@ -24,6 +24,7 @@
   align-items: flex-start;
   gap: 12px;
   padding: 16px 0;
+  background: var(--item-surface);
   border-bottom: 1px solid var(--line);
   min-height: 69px;
 }
@@ -34,7 +35,7 @@
 .time {
   flex-shrink: 0;
   font-size: 12px;
-  color: #8b9290;
+  color: var(--muted);
   width: 40px;
   line-height: 22px;
   font-variant-numeric: tabular-nums;
@@ -69,7 +70,7 @@
   width: 24px;
   height: 25px;
   padding: 4px;
-  color: #939f98;
+  color: var(--muted);
   opacity: 0;
 }
 .row:hover > button:last-child,
@@ -78,7 +79,7 @@
 }
 .done .text > span {
   text-decoration: line-through;
-  color: #9aa39c;
+  color: var(--muted);
 }
 .empty {
   display: flex;
@@ -87,7 +88,7 @@
   flex-direction: column;
   gap: 12px;
   min-height: 185px;
-  color: #929b95;
+  color: var(--muted);
   font-size: 13px;
 }
 .empty button,
@@ -99,7 +100,7 @@
 .completed {
   border: 0;
   background: none;
-  color: #8c958f;
+  color: var(--muted);
   font-size: 12px;
   padding: 12px 0;
 }

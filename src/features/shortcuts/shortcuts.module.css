@@ -89,7 +89,7 @@
 }
 .dragging {
   z-index: 9;
-  background: #edf4ef;
+  background: var(--soft-accent);
   border-radius: 6px;
 }
 @media (max-width: 680px) {

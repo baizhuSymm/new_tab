@@ -23,10 +23,10 @@
 }
 .tool:hover,
 .selected {
-  background: #edf6f0;
+  background: var(--soft-accent);
 }
 .selected {
-  border-color: #e0eee5;
+  border-color: var(--soft-accent-border);
 }
 .icon,
 .chatIcon {
@@ -40,9 +40,9 @@
 }
 .chat {
   margin-top: 12px;
-  border: 1px solid #e4e9e5;
+  border: 1px solid var(--line);
   border-radius: 7px;
-  background: #fff;
+  background: var(--surface);
   overflow: hidden;
 }
 .chatHeader {
@@ -51,13 +51,13 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  border-bottom: 1px solid #edf0ee;
+  border-bottom: 1px solid var(--line);
 }
 .chatIcon {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #edf6f0;
+  background: var(--soft-accent);
   flex: 0 0 auto;
 }
 .chatTitle {
@@ -71,7 +71,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #8a918d;
+  color: var(--muted);
   font-size: 11px;
 }
 .chatTitle i {
@@ -92,12 +92,12 @@
   padding: 24px;
 }
 .empty strong {
-  color: #343c37;
+  color: var(--text);
   font-size: 14px;
   font-weight: 500;
 }
 .empty p {
-  color: #8a918d;
+  color: var(--muted);
   font-size: 12px;
 }
 .connect {
@@ -121,7 +121,7 @@
   gap: 8px;
   margin: 0 14px 14px;
   padding: 5px;
-  border: 1px solid #e4e9e5;
+  border: 1px solid var(--line);
   border-radius: 6px;
 }
 .composer input {

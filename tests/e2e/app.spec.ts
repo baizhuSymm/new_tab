@@ -48,6 +48,59 @@ test("clock and weather stay readable over dark wallpapers", async ({ page }) =>
     "rgb(255, 255, 255)",
   );
 });
+test("dark theme uses layered surfaces without white component blocks", async ({ page }, testInfo) => {
+  await ready(page);
+  await page.evaluate(() => {
+    document.documentElement.dataset.theme = "dark";
+  });
+  const pageColor = await page.locator("html").evaluate((element) =>
+    getComputedStyle(element).backgroundColor,
+  );
+  expect(pageColor).toBe("rgb(43, 51, 47)");
+  const search = page.getByRole("search");
+  const searchColor = await search.evaluate((element) =>
+    getComputedStyle(element).backgroundColor,
+  );
+  expect(searchColor).toBe("rgb(61, 72, 65)");
+  await page.getByRole("button", { name: "OpenClaw" }).click();
+  const chat = page.getByRole("region", { name: "OpenClaw 对话" });
+  await expect(chat).toBeVisible();
+  const chatColor = await chat.evaluate((element) =>
+    getComputedStyle(element).backgroundColor,
+  );
+  expect(chatColor).toBe("rgb(52, 62, 56)");
+
+  await page.getByRole("button", { name: "添加待办", exact: true }).click();
+  await page.getByLabel("事项", { exact: true }).fill("暗色待办");
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "保存", exact: true })
+    .click();
+  const taskRow = page
+    .getByRole("button", { name: "暗色待办" })
+    .locator("xpath=..");
+  await expect(taskRow).toHaveCSS("background-color", "rgb(52, 62, 56)");
+
+  const schedule = page.getByRole("region", { name: "日程管理" });
+  await schedule.locator('button[aria-label="添加日程"]').click();
+  await page.getByLabel("标题", { exact: true }).fill("暗色日程");
+  await page.getByLabel("开始时间").fill("2099-01-01T10:00");
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "保存", exact: true })
+    .click();
+  const scheduleRow = schedule
+    .getByRole("button", { name: /暗色日程/ })
+    .locator("xpath=..");
+  await expect(scheduleRow).toHaveCSS("background-color", "rgb(52, 62, 56)");
+  await expect(scheduleRow).toContainText("暗色日程");
+  await expect(scheduleRow.locator("strong")).toHaveCSS(
+    "color",
+    "rgb(238, 243, 239)",
+  );
+
+  await page.screenshot({ path: testInfo.outputPath("dark-theme.png"), fullPage: true });
+});
 test("shortcut CRUD, groups, order and persistence", async ({ page }) => {
   await ready(page);
   await page.getByRole("button", { name: "整理网站", exact: true }).click();

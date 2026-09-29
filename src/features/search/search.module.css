@@ -3,8 +3,8 @@
   z-index: 5;
 }
 .bar {
-  background: #fffffff7;
-  border: 1px solid #dfe5e1;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
   border-radius: 7px;
   box-shadow: 0 3px 12px #123c2610;
   display: flex;
@@ -22,7 +22,7 @@
   outline: none;
 }
 .bar input::placeholder {
-  color: #969c99;
+  color: var(--muted);
 }
 .bar select {
   width: 78px;
@@ -42,7 +42,7 @@
   top: calc(100% + 8px);
   left: 0;
   right: 0;
-  background: white;
+  background: var(--surface);
   padding: 8px;
   box-shadow: 0 10px 35px #17312220;
   border: 1px solid var(--line);
@@ -64,7 +64,7 @@
   text-overflow: ellipsis;
 }
 .matches button[aria-selected="true"] {
-  background: #edf5ef;
+  background: var(--soft-accent);
 }
 @media (max-width: 540px) {
   .bar {

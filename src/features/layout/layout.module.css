@@ -25,7 +25,7 @@
 .editModule {
   outline: 1px solid #bed4c6;
   padding: 10px;
-  background: #fff;
+  background: var(--surface-raised);
 }
 .controls {
   display: flex;

@@ -107,7 +107,7 @@ export function WeatherWidget({ onConfigure }: { onConfigure: () => void }) {
         <Icon
           size={31}
           strokeWidth={1.5}
-          color={weather?.code === 0 ? "#d59b19" : "#637969"}
+          color={weather?.code === 0 ? "#f0c66d" : "#e6eee8"}
         />
         <span>
           <strong>

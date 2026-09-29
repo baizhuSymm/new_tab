@@ -12,6 +12,7 @@
   gap: 10px;
   min-width: 0;
   padding: 10px 0;
+  background: var(--item-surface);
   border-bottom: 1px solid var(--line);
 }
 .marker { flex: 0 0 9px; width: 9px; height: 9px; border-radius: 50%; background: #26936f; }

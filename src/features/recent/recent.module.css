@@ -46,7 +46,7 @@
   font-size: 10px;
 }
 .item > svg:last-child {
-  color: #85968b;
+  color: var(--muted);
 }
 @media (max-width: 540px) {
   .strip {
