@@ -1,12 +1,25 @@
 :root {
   font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
-  color: #252a2b;
-  background: #fafbfa;
+  color: var(--text);
+  background: var(--page);
   font-synthesis: none;
   --green: #29795d;
   --muted: #858c89;
   --line: #e7ebe8;
   --surface: #fff;
+  --page: #fafbfa;
+  --text: #252a2b;
+  --accent: #29795d;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --green: #79c39d;
+  --accent: #79c39d;
+  --muted: #a4b0a9;
+  --line: #3a4640;
+  --surface: #202824;
+  --page: #151b18;
+  --text: #e7eee9;
 }
 * {
   box-sizing: border-box;
@@ -33,7 +46,7 @@ textarea {
 button {
   cursor: pointer;
   border: 1px solid var(--line);
-  background: white;
+  background: var(--surface);
   border-radius: 6px;
   padding: 8px 13px;
 }
@@ -170,7 +183,7 @@ small,
   width: 480px;
   max-width: 100%;
   max-height: calc(100dvh - 48px);
-  background: white;
+  background: var(--surface);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -244,6 +257,7 @@ small,
   padding: 5px;
   color: var(--muted);
 }
+.form input, .form select, .form textarea { background: var(--surface); }
 .notice {
   padding: 10px 12px;
   background: #fff6e9;

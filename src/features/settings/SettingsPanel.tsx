@@ -56,6 +56,13 @@ export function SettingsPanel({
             <option value="12">12 小时制</option>
           </select>
         </label>
+        <label>
+          外观主题
+          <select aria-label="外观主题" value={settings.theme} onChange={(e) => save({ theme: e.target.value as Settings["theme"] })}>
+            <option value="light">浅色</option>
+            <option value="dark">深色</option>
+          </select>
+        </label>
         <label className="check-label">
           <input
             type="checkbox"
