@@ -104,7 +104,7 @@ export function createRepository(adapter: StorageAdapter): Repository {
       const settings: Settings = {
         ...oldSettings,
         theme: oldSettings.theme ?? "light",
-        wallpaperId: oldSettings.wallpaperId ?? wallpaperId,
+        wallpaperId: (data.settings as Partial<Settings> | undefined)?.wallpaperId ?? wallpaperId,
         wallpaperPositions: {
           city: { positionX: 50, positionY: 50 },
           ...(legacyWallpaper ? { [legacyWallpaper.id]: { positionX: legacyWallpaper.positionX, positionY: legacyWallpaper.positionY } } : {}),

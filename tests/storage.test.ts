@@ -217,7 +217,7 @@ test("upgrades schema v1 while preserving records and custom wallpaper", async (
       dueTime: null, completedAt: null, order: 0, updatedAt: 2,
     },
     "note:keep": { id: "keep", text: "保留便签", createdAt: 1, updatedAt: 2 },
-    settings: { ...defaultSettings, wallpaper: "custom", positionX: 22, positionY: 68 },
+    settings: { wallpaper: "custom", positionX: 22, positionY: 68 },
     layout: defaultLayout,
     draft: { id: "", text: "", updatedAt: 0 },
     wallpaper: oldWallpaper,
@@ -228,6 +228,7 @@ test("upgrades schema v1 while preserving records and custom wallpaper", async (
   expect(snapshot.tasks.map((item) => item.id)).toContain("keep");
   expect(snapshot.notes.map((item) => item.id)).toContain("keep");
   expect(snapshot.settings.theme).toBe("light");
+  expect(snapshot.settings.wallpaperId).toBe("legacy-wall");
   expect(snapshot.wallpapers).toEqual([oldWallpaper]);
   expect(snapshot.settings.wallpaperPositions["legacy-wall"]).toEqual({ positionX: 22, positionY: 68 });
   expect((await createRepository(adapter).load()).wallpapers).toEqual([oldWallpaper]);
