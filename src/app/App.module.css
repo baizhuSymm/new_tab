@@ -73,11 +73,11 @@
   justify-content: space-between;
   align-items: flex-start;
   padding: 45px 5%;
-  background: linear-gradient(180deg, #ffffff48, transparent 64%);
+  background: linear-gradient(180deg, #101b17a6 0%, #101b1761 38%, transparent 78%);
 }
 .clock {
-  color: #192a25;
-  text-shadow: 0 1px 8px #ffffff80;
+  color: #fff;
+  text-shadow: 0 1px 8px #0008;
 }
 .clock time {
   font-size: 56px;
@@ -88,7 +88,7 @@
 .clock small {
   font-size: 13px;
   padding-left: 8px;
-  color: #253d31;
+  color: #fff;
 }
 .clock p {
   margin-top: 9px;

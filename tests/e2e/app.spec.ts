@@ -32,6 +32,22 @@ test("first installation is empty, dialogs trap focus and restore it", async ({
     page.getByRole("button", { name: "设置", exact: true }),
   ).toBeFocused();
 });
+test("clock and weather stay readable over dark wallpapers", async ({ page }) => {
+  await ready(page);
+  await expect(page.locator("header time")).toHaveCSS(
+    "color",
+    "rgb(255, 255, 255)",
+  );
+  const weather = page.getByRole("button", { name: /天气|城市/ });
+  await expect(weather.locator("strong")).toHaveCSS(
+    "color",
+    "rgb(255, 255, 255)",
+  );
+  await expect(weather.locator("small")).toHaveCSS(
+    "color",
+    "rgb(255, 255, 255)",
+  );
+});
 test("shortcut CRUD, groups, order and persistence", async ({ page }) => {
   await ready(page);
   await page.getByRole("button", { name: "整理网站", exact: true }).click();

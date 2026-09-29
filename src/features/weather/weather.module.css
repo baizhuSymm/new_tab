@@ -9,6 +9,8 @@
   gap: 13px;
   padding: 0;
   text-align: left;
+  color: #fff;
+  text-shadow: 0 1px 6px #0008;
 }
 .summary:hover {
   background: transparent;
@@ -23,7 +25,7 @@
 }
 .summary small {
   font-size: 12px;
-  color: #505e55;
+  color: #fff;
   max-width: 210px;
 }
 .source {
@@ -33,7 +35,8 @@
   gap: 4px;
   margin-top: 5px;
   font-size: 9px;
-  color: #637167;
+  color: #fff;
+  text-shadow: 0 1px 6px #0008;
 }
 .source button {
   width: 20px;
