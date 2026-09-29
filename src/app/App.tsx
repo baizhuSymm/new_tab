@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Settings,
   House,
@@ -18,12 +18,14 @@ import { AiTools } from "../features/ai-tools/AiTools";
 import { openDestination } from "../features/search/navigation";
 import { ShortcutGrid } from "../features/shortcuts/ShortcutGrid";
 import { TaskPanel } from "../features/tasks/TaskPanel";
+import { SchedulePanel } from "../features/schedule/SchedulePanel";
 import { QuickNote } from "../features/notes/QuickNote";
 import { useNoteDraft } from "../features/notes/useNoteDraft";
 import { ModuleGrid } from "../features/layout/ModuleGrid";
 import { RecentStrip } from "../features/recent/RecentStrip";
 import { SettingsPanel } from "../features/settings/SettingsPanel";
 import { WallpaperPanel } from "../features/wallpaper/WallpaperPanel";
+import { builtinWallpapers, getWallpaperPosition } from "../domain/wallpapers";
 import { WeatherWidget, CityPicker } from "../features/weather/WeatherWidget";
 import { useClock } from "../features/clock/useClock";
 import styles from "./App.module.css";
@@ -45,6 +47,7 @@ function Shell() {
     [saving, setSaving] = useState(false);
   const now = useClock(),
     settings = snapshot.settings;
+  useEffect(() => { document.documentElement.dataset.theme = settings.theme; }, [settings.theme]);
   function navigate(next: AppView) {
     if (draftLayout && !confirm("放弃尚未保存的布局？")) return;
     setDraftLayout(null);
@@ -73,10 +76,10 @@ function Shell() {
       void run(action).finally(() => openDestination(site.url, "current"));
     }
   }
-  const source =
-    settings.wallpaper === "custom" && snapshot.wallpaper
-      ? snapshot.wallpaper.dataUrl
-      : "./wallpapers/city-panorama.png";
+  const selectedWallpaper = builtinWallpapers.find((item) => item.id === settings.wallpaperId);
+  const selectedUpload = snapshot.wallpapers.find((item) => item.id === settings.wallpaperId);
+  const source = selectedUpload?.dataUrl ?? selectedWallpaper?.src ?? builtinWallpapers[0].src;
+  const crop = getWallpaperPosition(settings, settings.wallpaperId);
   const nav = [
     { id: "home", label: "首页", icon: House },
     { id: "tasks", label: "待办管理", icon: SquareCheck },
@@ -119,7 +122,7 @@ function Shell() {
             src={source}
             alt="城市晨光壁纸"
             style={{
-              objectPosition: `${settings.positionX}% ${settings.positionY}%`,
+              objectPosition: `${crop.positionX}% ${crop.positionY}%`,
             }}
           />
           <div className={styles.heroContent}>
@@ -196,6 +199,7 @@ function Shell() {
               >
                 {{
                   shortcuts: <ShortcutGrid onOpen={open} />,
+                  schedule: <SchedulePanel />,
                   tasks: <TaskPanel />,
                   notes: (
                     <QuickNote

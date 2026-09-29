@@ -1,7 +1,7 @@
 export type SearchEngine = "bing" | "baidu" | "google";
 export type AppView = "home" | "tasks" | "notes";
-export type ModuleId = "shortcuts" | "tasks" | "notes" | "recent";
-export type LayoutColumn = "left" | "right" | "full";
+export type ModuleId = "shortcuts" | "recent" | "schedule" | "tasks" | "notes";
+export type LayoutColumn = "left" | "right";
 export interface Shortcut {
   id: string;
   name: string;
@@ -92,7 +92,7 @@ export interface Settings {
   wallpaperPositions: Record<string, { positionX: number; positionY: number }>;
 }
 export interface Layout {
-  version: 1;
+  version: 2;
   modules: {
     id: ModuleId;
     column: LayoutColumn;

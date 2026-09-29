@@ -143,18 +143,19 @@ export function validateSettings(s: Settings) {
 export function validateLayout(layout: Layout) {
   if (
     !layout ||
-    layout.version !== 1 ||
+    layout.version !== 2 ||
     !Array.isArray(layout.modules) ||
-    layout.modules.length !== 4 ||
+    layout.modules.length !== 5 ||
     layout.modules.some(
       (m) =>
         !m ||
-        !["shortcuts", "tasks", "notes", "recent"].includes(m.id) ||
-        !["left", "right", "full"].includes(m.column) ||
+        !["shortcuts", "recent", "schedule", "tasks", "notes"].includes(m.id) ||
+        !["left", "right"].includes(m.column) ||
+        m.column !== (m.id === "shortcuts" || m.id === "recent" ? "left" : "right") ||
         typeof m.visible !== "boolean" ||
         !finite(m.order),
     ) ||
-    new Set(layout.modules.map((m) => m.id)).size !== 4
+    new Set(layout.modules.map((m) => m.id)).size !== 5
   )
     throw Error("布局数据格式不正确");
 }

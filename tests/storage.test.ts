@@ -277,3 +277,21 @@ test("applying wallpaper id saves its crop and selection in one write", async ()
   await expect(repo.applyWallpaperId("city", { positionX: 50, positionY: 50 })).rejects.toThrow("quota");
   expect((await repo.load()).settings.wallpaperId).toBe("gallery-a");
 });
+
+test("migrates schema v2 layout v1 to fixed columns without losing visibility", async () => {
+  const legacy = {
+    version: 1 as const,
+    modules: [
+      { id: "shortcuts" as const, column: "left" as const, order: 0, visible: true },
+      { id: "tasks" as const, column: "right" as const, order: 0, visible: false },
+      { id: "notes" as const, column: "right" as const, order: 1, visible: true },
+      { id: "recent" as const, column: "full" as const, order: 0, visible: true },
+    ],
+  };
+  const adapter = memoryAdapter({ schemaVersion: 2, settings: defaultSettings, layout: legacy, draft: { id: "", text: "", updatedAt: 0 } });
+  const layout = (await createRepository(adapter).load()).layout;
+  expect(layout.version).toBe(2);
+  expect(layout.modules.find((item) => item.id === "recent")).toMatchObject({ column: "left", visible: true });
+  expect(layout.modules.find((item) => item.id === "tasks")).toMatchObject({ column: "right", visible: false });
+  expect(layout.modules.map((item) => item.id)).toContain("schedule");
+});

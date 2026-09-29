@@ -13,12 +13,13 @@ export const defaultSettings: Settings = {
   wallpaperPositions: { city: { positionX: 50, positionY: 50 } },
 };
 export const defaultLayout: Layout = {
-  version: 1,
+  version: 2,
   modules: [
     { id: "shortcuts", column: "left", order: 0, visible: true },
-    { id: "tasks", column: "right", order: 0, visible: true },
-    { id: "notes", column: "right", order: 1, visible: true },
-    { id: "recent", column: "full", order: 0, visible: true },
+    { id: "recent", column: "left", order: 1, visible: true },
+    { id: "schedule", column: "right", order: 0, visible: true },
+    { id: "tasks", column: "right", order: 1, visible: true },
+    { id: "notes", column: "right", order: 2, visible: true },
   ],
 };
 const sites = [

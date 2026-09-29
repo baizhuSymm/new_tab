@@ -5,9 +5,7 @@ import {
   KeyboardSensor,
   useSensor,
   useSensors,
-  useDroppable,
   closestCenter,
-  pointerWithin,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -27,8 +25,9 @@ const labels: Record<ModuleId, string> = {
   tasks: "待办事项",
   notes: "快速记录",
   recent: "最近打开",
+  schedule: "日程管理",
 };
-const columns: LayoutColumn[] = ["left", "right", "full"];
+const columns: LayoutColumn[] = ["left", "right"];
 export function ModuleGrid({
   layout,
   editing,
@@ -46,29 +45,19 @@ export function ModuleGrid({
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
-  function move(id: ModuleId, column: LayoutColumn, index: number) {
-    onChange(moveModule(layout, id, column, index));
+  function move(id: ModuleId, index: number) {
+    onChange(moveModule(layout, id, index));
   }
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={(args) => {
-        if (!args.pointerCoordinates) return closestCenter(args);
-        const hits = pointerWithin(args);
-        const modules = hits.filter(
-          (hit) => !columns.includes(hit.id as LayoutColumn),
-        );
-        return modules.length ? modules : hits;
-      }}
+      collisionDetection={closestCenter}
       onDragEnd={({ active, over }) => {
         if (!over || active.id === over.id) return;
         const target = layout.modules.find((x) => x.id === over.id);
-        const column =
-          target?.column ??
-          (columns.includes(over.id as LayoutColumn)
-            ? (over.id as LayoutColumn)
-            : null);
-        if (column) move(active.id as ModuleId, column, target?.order ?? 0);
+        const source = layout.modules.find((x) => x.id === active.id);
+        if (source && target?.column === source.column)
+          move(source.id, target.order);
       }}
     >
       {editing && (
@@ -118,7 +107,7 @@ export function ModuleGrid({
                           className="small-link"
                           aria-label={`上移${labels[item.id]}`}
                           onClick={() =>
-                            move(item.id, column, Math.max(0, index - 1))
+                            move(item.id, Math.max(0, index - 1))
                           }
                         >
                           <ArrowUp size={14} />
@@ -127,21 +116,10 @@ export function ModuleGrid({
                           type="button"
                           className="small-link"
                           aria-label={`下移${labels[item.id]}`}
-                          onClick={() => move(item.id, column, index + 1)}
+                          onClick={() => move(item.id, index + 1)}
                         >
                           <ArrowDown size={14} />
                         </button>
-                        <select
-                          aria-label={`${labels[item.id]}位置`}
-                          value={column}
-                          onChange={(e) =>
-                            move(item.id, e.target.value as LayoutColumn, 0)
-                          }
-                        >
-                          <option value="left">左栏</option>
-                          <option value="right">右栏</option>
-                          <option value="full">整行</option>
-                        </select>
                         <IconButton
                           label={`隐藏${labels[item.id]}`}
                           onClick={() =>
@@ -178,15 +156,10 @@ function Column({
   editing: boolean;
   children: ReactNode;
 }) {
-  const { setNodeRef, isOver } = useDroppable({
-    id: column,
-    disabled: !editing,
-  });
   return (
     <div
-      ref={setNodeRef}
       data-column={column}
-      className={`${styles.column} ${styles[column]} ${editing ? styles.editColumn : ""} ${isOver ? styles.over : ""}`}
+      className={`${styles.column} ${styles[column]} ${editing ? styles.editColumn : ""}`}
     >
       {children}
     </div>

@@ -15,6 +15,7 @@ import {
   seedShortcuts,
 } from "../domain/defaults";
 import type { StorageAdapter } from "../platform/storage";
+import { builtinWallpapers } from "../domain/wallpapers";
 import {
   validateEntity,
   validateSnapshot,
@@ -52,6 +53,20 @@ export class DraftConflictError extends Error {
 }
 export const sameDraft = (a: NoteDraft, b: NoteDraft) =>
   a.id === b.id && a.updatedAt === b.updatedAt && a.text === b.text;
+async function migrateLayout(data: Record<string, unknown>, adapter: StorageAdapter) {
+  const current = data.layout as { version?: number; modules?: Array<{ id?: string; visible?: boolean }> } | undefined;
+  if (!current || current.version === 2) return data;
+  const visible = new Map((current.modules ?? []).map((item) => [item.id, item.visible]));
+  const layout: Layout = {
+    version: 2,
+    modules: structuredClone(defaultLayout.modules).map((item) => ({
+      ...item,
+      visible: visible.get(item.id) ?? true,
+    })),
+  };
+  await adapter.write({ layout });
+  return adapter.readAll();
+}
 let fallbackQueue: Promise<unknown> = Promise.resolve();
 function locked<T>(run: () => Promise<T>): Promise<T> {
   if (globalThis.navigator?.locks)
@@ -84,9 +99,9 @@ export function createRepository(adapter: StorageAdapter): Repository {
         ...(legacyWallpaper ? { [`wallpaper:${legacyWallpaper.id}`]: legacyWallpaper } : {}),
         schemaVersion: 2,
       });
-      return adapter.readAll();
+      return migrateLayout(await adapter.readAll(), adapter);
     }
-    if (data.schemaVersion === 2) return data;
+    if (data.schemaVersion === 2) return migrateLayout(data, adapter);
     const seeds: Record<string, unknown> = {
       settings: defaultSettings,
       layout: defaultLayout,
@@ -296,7 +311,7 @@ export function createRepository(adapter: StorageAdapter): Repository {
         if (!wallpaperId || !Number.isFinite(position.positionX) || position.positionX < 0 || position.positionX > 100 || !Number.isFinite(position.positionY) || position.positionY < 0 || position.positionY > 100) throw Error("壁纸设置格式不正确");
         const data = await adapter.readAll();
         const settings = data.settings as Settings;
-        if (wallpaperId !== "city" && !data[`wallpaper:${wallpaperId}`]) throw Error("请选择有效壁纸");
+        if (!builtinWallpapers.some((item) => item.id === wallpaperId) && !data[`wallpaper:${wallpaperId}`]) throw Error("请选择有效壁纸");
         const next: Settings = {
           ...settings,
           wallpaperId,
