@@ -236,9 +236,9 @@ test("upgrades schema v1 while preserving records and custom wallpaper", async (
 test("saves, sorts and removes schedule entities independently", async () => {
   const repo = createRepository(memoryAdapter());
   await repo.load();
-  const event = (id: string, startAt: string) => ({
+  const event = (id: string, startAt: string): import("../src/domain/types").ScheduleEvent => ({
     id, title: id, startAt, endAt: null, description: null,
-    order: 0, updatedAt: 1,
+    order: 0, updatedAt: 1, color: "green",
   });
   await repo.save("schedule", event("later", "2026-10-02T09:00:00.000Z"));
   await repo.save("schedule", event("sooner", "2026-10-01T09:00:00.000Z"));
@@ -260,4 +260,20 @@ test("generic wallpaper assets can be saved and removed without affecting select
   expect((await repo.load()).wallpapers).toEqual([asset]);
   await repo.remove("wallpaper", "upload");
   expect((await repo.load()).wallpapers).toEqual([]);
+});
+
+test("applying wallpaper id saves its crop and selection in one write", async () => {
+  const adapter = memoryAdapter();
+  const repo = createRepository(adapter);
+  await repo.load();
+  await repo.save("wallpaper", {
+    id: "gallery-a", dataUrl: "data:image/webp;base64,YQ==", mimeType: "image/webp",
+    byteLength: 1, positionX: 50, positionY: 50,
+  });
+  await repo.applyWallpaperId("gallery-a", { positionX: 30, positionY: 70 });
+  expect((await repo.load()).settings.wallpaperId).toBe("gallery-a");
+  expect((await repo.load()).settings.wallpaperPositions["gallery-a"]).toEqual({ positionX: 30, positionY: 70 });
+  adapter.write = async () => { throw Error("quota"); };
+  await expect(repo.applyWallpaperId("city", { positionX: 50, positionY: 50 })).rejects.toThrow("quota");
+  expect((await repo.load()).settings.wallpaperId).toBe("gallery-a");
 });

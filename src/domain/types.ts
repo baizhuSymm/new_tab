@@ -45,6 +45,7 @@ export interface ScheduleEvent {
   description: string | null;
   order: number;
   updatedAt: number;
+  color: "green" | "blue" | "amber" | "purple" | "rose";
 }
 export interface RecentEntry {
   id: string;

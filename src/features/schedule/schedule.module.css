@@ -1,0 +1,40 @@
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.heading h2 { margin: 0; font-size: 17px; }
+.list, .allList { display: grid; }
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.marker { flex: 0 0 9px; width: 9px; height: 9px; border-radius: 50%; background: #26936f; }
+.marker[data-color="blue"] { background: #3478db; }
+.marker[data-color="amber"] { background: #d99520; }
+.marker[data-color="purple"] { background: #8b54ca; }
+.marker[data-color="rose"] { background: #d65378; }
+.event {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 3px;
+  padding: 0;
+  text-align: left;
+  background: transparent;
+  border: 0;
+}
+.event:hover { color: var(--accent); background: transparent; }
+.event strong, .event time, .event small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.event time, .event small { color: var(--muted); font-size: 12px; }
+.row > button { opacity: 0; }
+.row:hover > button, .row:focus-within > button { opacity: 1; }
+.empty { display: grid; justify-items: center; align-content: center; gap: 9px; min-height: 110px; color: var(--muted); font-size: 13px; }
+.empty button { display: flex; align-items: center; gap: 5px; }
+.allList { max-height: 65vh; overflow-y: auto; }
+@media (max-width: 540px) { .row > button { opacity: 1; } }

@@ -94,6 +94,7 @@ export function validateEntity<K extends keyof EntityMap>(
       new Date(start).toISOString() !== event.startAt ||
       (event.endAt !== null && (!Number.isFinite(end) || new Date(end!).toISOString() !== event.endAt || end! <= start)) ||
       (event.description !== null && typeof event.description !== "string") ||
+      !["green", "blue", "amber", "purple", "rose"].includes(event.color) ||
       !event.title.trim() || event.title.length > 200 ||
       (event.description?.length ?? 0) > 2000
     ) throw Error("日程日期或内容格式不正确");

@@ -15,7 +15,7 @@ import type { AppSnapshot } from "../domain/types";
 const repository = createRepository(
   isExtension() ? chromeStorage() : webStorage(),
 );
-const Context = createContext<{
+export const AppDataContext = createContext<{
   snapshot: AppSnapshot;
   repository: Repository;
   run: (action: () => Promise<void>) => Promise<boolean>;
@@ -67,7 +67,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       </main>
     );
   return (
-    <Context.Provider
+    <AppDataContext.Provider
       value={{
         snapshot,
         repository,
@@ -77,11 +77,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
-    </Context.Provider>
+    </AppDataContext.Provider>
   );
 }
 export function useAppData() {
-  const value = useContext(Context);
+  const value = useContext(AppDataContext);
   if (!value) throw Error("AppProvider missing");
   return value;
 }
