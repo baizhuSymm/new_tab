@@ -59,7 +59,7 @@ test("shortcut CRUD, groups, order and persistence", async ({ page }) => {
     .getByRole("dialog")
     .getByRole("button", { name: "保存", exact: true })
     .click();
-  await page.getByLabel("网站分组").selectOption("default");
+  await page.getByRole("tablist", { name: "网站分组" }).getByRole("tab", { name: "常用" }).click();
   await expect(
     page.getByRole("button", { name: /更新的项目/ }).first(),
   ).toBeVisible();
@@ -118,10 +118,9 @@ test("layout cancellation, save, hidden restore and keyboard sorting", async ({
 }) => {
   await ready(page);
   await page.getByRole("button", { name: "编辑布局", exact: true }).click();
-  await page.getByLabel("待办事项位置").selectOption("left");
-  await expect(
-    page.locator("[data-column=left] [data-module=tasks]"),
-  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "待办事项位置" })).toHaveCount(0);
+  await page.getByRole("button", { name: "上移快速记录" }).click();
+  await expect(page.locator("[data-column=right] [data-module]").nth(1)).toHaveAttribute("data-module", "notes");
   await page.getByRole("button", { name: "取消", exact: true }).click();
   await expect(
     page.locator("[data-column=right] [data-module=tasks]"),
@@ -155,7 +154,7 @@ test("wallpaper rejects corrupt files and accepts real image; offline edits pers
   await page
     .getByLabel("上传壁纸")
     .setInputFiles("public/wallpapers/city-panorama.png");
-  await expect(page.getByRole("button", { name: "本地图片" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "自定义壁纸", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "应用壁纸" }).click();
   await expect(page.locator("header > img")).toHaveAttribute(
     "src",

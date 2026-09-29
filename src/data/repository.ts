@@ -54,14 +54,31 @@ export class DraftConflictError extends Error {
 export const sameDraft = (a: NoteDraft, b: NoteDraft) =>
   a.id === b.id && a.updatedAt === b.updatedAt && a.text === b.text;
 async function migrateLayout(data: Record<string, unknown>, adapter: StorageAdapter) {
-  const current = data.layout as { version?: number; modules?: Array<{ id?: string; visible?: boolean }> } | undefined;
+  const current = data.layout as { version?: number; modules?: Array<{ id?: string; visible?: boolean; order?: number }> } | undefined;
   if (!current || current.version === 2) return data;
-  const visible = new Map((current.modules ?? []).map((item) => [item.id, item.visible]));
+  const legacyModules = current.modules ?? [];
+  const visible = new Map(legacyModules.map((item) => [item.id, item.visible]));
+  const oldOrder = new Map(legacyModules.map((item) => [item.id, item.order ?? Number.MAX_SAFE_INTEGER]));
+  const modules = structuredClone(defaultLayout.modules).map((item) => ({
+    ...item,
+    visible: visible.get(item.id) ?? true,
+  }));
+  const schedule = modules.find((item) => item.id === "schedule")!;
+  const rightItems = modules
+    .filter((item) => item.column === "right" && item.id !== "schedule")
+    .sort((a, b) => (oldOrder.get(a.id) ?? a.order) - (oldOrder.get(b.id) ?? b.order));
+  const orderedModules = [
+    ...modules.filter((item) => item.column === "left"),
+    schedule,
+    ...rightItems,
+  ];
   const layout: Layout = {
     version: 2,
-    modules: structuredClone(defaultLayout.modules).map((item) => ({
+    modules: orderedModules.map((item, index) => ({
       ...item,
-      visible: visible.get(item.id) ?? true,
+      order: item.column === "left"
+        ? orderedModules.filter((candidate) => candidate.column === "left").indexOf(item)
+        : orderedModules.filter((candidate) => candidate.column === "right").indexOf(item),
     })),
   };
   await adapter.write({ layout });

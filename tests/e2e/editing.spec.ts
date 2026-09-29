@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-test("pointer sorting persists site order and module moves; outside drop cancels", async ({
+test("pointer sorting persists site order and fixed-column drop cannot move modules", async ({
   page,
 }) => {
   await page.goto("/");
@@ -32,9 +32,8 @@ test("pointer sorting persists site order and module moves; outside drop cancels
   await page.mouse.down();
   await page.mouse.move(target!.x + 60, target!.y + 60, { steps: 14 });
   await page.mouse.up();
-  await expect(
-    page.locator("[data-column=left] [data-module=tasks]"),
-  ).toBeVisible();
+  await expect(page.locator("[data-column=left] [data-module=tasks]")).toHaveCount(0);
+  await expect(page.locator("[data-column=right] [data-module=tasks]")).toBeVisible();
   const moved = await page
     .getByRole("button", { name: "拖动待办事项" })
     .boundingBox();
@@ -42,14 +41,12 @@ test("pointer sorting persists site order and module moves; outside drop cancels
   await page.mouse.down();
   await page.mouse.move(10, 10, { steps: 14 });
   await page.mouse.up();
-  await expect(
-    page.locator("[data-column=left] [data-module=tasks]"),
-  ).toBeVisible();
+  await expect(page.locator("[data-column=right] [data-module=tasks]")).toBeVisible();
   await page.getByRole("button", { name: "保存布局" }).click();
   await expect(page.getByRole("button", { name: "保存布局" })).toHaveCount(0);
   await page.reload();
   await expect(
-    page.locator("[data-column=left] [data-module=tasks]"),
+    page.locator("[data-column=right] [data-module=tasks]"),
   ).toBeVisible();
 });
 test("quota failure retains task form and does not create a task", async ({

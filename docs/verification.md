@@ -1,5 +1,23 @@
 # 实施与验证记录
 
+## 2026-09-29 首页日程与个性化
+
+本次新增 schema v2 与布局 v2 迁移、网站分组 Tab、本地日程、主题/壁纸库和固定左右栏组件管理。此记录对应 `codex/home-enhancements` 分支。
+
+| 检查 | 实际命令 | 结果 |
+| --- | --- | --- |
+| 单元与组件测试 | `node node_modules/vitest/vitest.mjs run` | 13 个文件，43/43 通过 |
+| TypeScript | `node node_modules/typescript/bin/tsc --noEmit` | 退出码 0 |
+| 生产扩展构建 | `node scripts/build.mjs` | Vite 构建及 manifest/入口/资源检查通过 |
+| 网页浏览器测试 | `node node_modules/@playwright/test/cli.js test --project=web` | 31/31 通过 |
+| 扩展浏览器测试 | `node node_modules/@playwright/test/cli.js test tests/e2e/extension.spec.ts --project=extension` | 未能启动 Chromium：`spawn UNKNOWN`；扩展页面未加载，不能视为扩展验收通过 |
+
+网页测试验证固定左栏（网站、最近打开）与右栏（日程、待办、便签），组件显隐、栏内排序、取消/保存、分组 Tab 键盘操作及 1487、1440、1366、1024、390、320px 视口。壁纸图片为本地打包资源；真实扩展新标签覆盖、`chrome.storage` 跨标签/重启行为和 CSP 控制台仍待手动验收。
+
+真实扩展启动错误发生在页面加载前，和扩展功能行为无关；未改动系统程序集或用户的 Chrome/Edge 配置。网页自动化和构建结果不能替代真实浏览器扩展验收。
+
+## 既有验证记录（2026-09-27）
+
 日期：2026-09-27。结论：网页预览和生产构建已通过验证；扩展真实加载验收仍受环境阻塞，不能称为 Chrome/Edge 已验收。
 
 ## 网站样式微调复验

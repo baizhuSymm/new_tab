@@ -295,3 +295,18 @@ test("migrates schema v2 layout v1 to fixed columns without losing visibility", 
   expect(layout.modules.find((item) => item.id === "tasks")).toMatchObject({ column: "right", visible: false });
   expect(layout.modules.map((item) => item.id)).toContain("schedule");
 });
+
+test("preserves a legacy right-column order when adding the schedule module", async () => {
+  const legacy = {
+    version: 1,
+    modules: [
+      { id: "shortcuts", column: "left", order: 0, visible: true },
+      { id: "tasks", column: "right", order: 1, visible: true },
+      { id: "notes", column: "right", order: 0, visible: true },
+      { id: "recent", column: "full", order: 0, visible: true },
+    ],
+  };
+  const adapter = memoryAdapter({ schemaVersion: 2, settings: defaultSettings, layout: legacy, draft: { id: "", text: "", updatedAt: 0 } });
+  const modules = (await createRepository(adapter).load()).layout.modules;
+  expect(modules.filter((item) => item.column === "right").map((item) => item.id)).toEqual(["schedule", "notes", "tasks"]);
+});
