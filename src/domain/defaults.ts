@@ -8,6 +8,9 @@ export const defaultSettings: Settings = {
   wallpaper: "city",
   positionX: 50,
   positionY: 50,
+  theme: "light",
+  wallpaperId: "city",
+  wallpaperPositions: { city: { positionX: 50, positionY: 50 } },
 };
 export const defaultLayout: Layout = {
   version: 1,

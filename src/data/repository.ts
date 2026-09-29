@@ -6,6 +6,7 @@ import type {
   RecentEntry,
   Settings,
   WallpaperAsset,
+  ScheduleEvent,
   WeatherCache,
 } from "../domain/types";
 import {
@@ -41,6 +42,7 @@ export interface Repository {
     asset: WallpaperAsset | null,
     patch: Pick<Partial<Settings>, "wallpaper" | "positionX" | "positionY">,
   ): Promise<void>;
+  applyWallpaperId(wallpaperId: string, position: { positionX: number; positionY: number }): Promise<void>;
   subscribe(listener: () => void): () => void;
 }
 export class DraftConflictError extends Error {
@@ -61,9 +63,30 @@ function locked<T>(run: () => Promise<T>): Promise<T> {
 export function createRepository(adapter: StorageAdapter): Repository {
   async function initialize() {
     const data = await adapter.readAll();
-    if (data.schemaVersion !== undefined && data.schemaVersion !== 1)
+    if (data.schemaVersion !== undefined && data.schemaVersion !== 1 && data.schemaVersion !== 2)
       throw Error("数据版本不受支持，请更新扩展");
-    if (data.schemaVersion === 1) return data;
+    if (data.schemaVersion === 1) {
+      const oldSettings = { ...defaultSettings, ...(data.settings as Partial<Settings>) };
+      const legacyWallpaper = data.wallpaper as WallpaperAsset | undefined;
+      const wallpaperId = oldSettings.wallpaper === "custom" && legacyWallpaper ? legacyWallpaper.id : "city";
+      const settings: Settings = {
+        ...oldSettings,
+        theme: oldSettings.theme ?? "light",
+        wallpaperId: oldSettings.wallpaperId ?? wallpaperId,
+        wallpaperPositions: {
+          city: { positionX: 50, positionY: 50 },
+          ...(legacyWallpaper ? { [legacyWallpaper.id]: { positionX: legacyWallpaper.positionX, positionY: legacyWallpaper.positionY } } : {}),
+          ...(oldSettings.wallpaperPositions ?? {}),
+        },
+      };
+      await adapter.write({
+        settings,
+        ...(legacyWallpaper ? { [`wallpaper:${legacyWallpaper.id}`]: legacyWallpaper } : {}),
+        schemaVersion: 2,
+      });
+      return adapter.readAll();
+    }
+    if (data.schemaVersion === 2) return data;
     const seeds: Record<string, unknown> = {
       settings: defaultSettings,
       layout: defaultLayout,
@@ -78,7 +101,7 @@ export function createRepository(adapter: StorageAdapter): Repository {
         Object.entries(seeds).filter(([key]) => !(key in data)),
       ),
     );
-    await adapter.write({ schemaVersion: 1 });
+    await adapter.write({ schemaVersion: 2 });
     return adapter.readAll();
   }
   function entities<K extends keyof EntityMap>(
@@ -97,7 +120,7 @@ export function createRepository(adapter: StorageAdapter): Repository {
       locked(async () => {
         const data = await initialize();
         return validateSnapshot({
-          schemaVersion: 1,
+          schemaVersion: 2,
           shortcuts: entities(data, "shortcut"),
           groups: entities(data, "group"),
           tasks: entities(data, "task"),
@@ -105,6 +128,8 @@ export function createRepository(adapter: StorageAdapter): Repository {
           recent: entities(data, "recent").sort(
             (a, b) => b.openedAt - a.openedAt,
           ),
+          schedules: entities(data, "schedule").sort((a, b) => Date.parse(a.startAt) - Date.parse(b.startAt)),
+          wallpapers: entities(data, "wallpaper"),
           settings: data.settings as Settings,
           layout: data.layout as Layout,
           draft: data.draft as NoteDraft,
@@ -265,6 +290,23 @@ export function createRepository(adapter: StorageAdapter): Repository {
           settings,
           ...(asset ? { wallpaper: asset } : {}),
         });
+      }),
+    applyWallpaperId: (wallpaperId, position) =>
+      locked(async () => {
+        if (!wallpaperId || !Number.isFinite(position.positionX) || position.positionX < 0 || position.positionX > 100 || !Number.isFinite(position.positionY) || position.positionY < 0 || position.positionY > 100) throw Error("壁纸设置格式不正确");
+        const data = await adapter.readAll();
+        const settings = data.settings as Settings;
+        if (wallpaperId !== "city" && !data[`wallpaper:${wallpaperId}`]) throw Error("请选择有效壁纸");
+        const next: Settings = {
+          ...settings,
+          wallpaperId,
+          wallpaperPositions: { ...settings.wallpaperPositions, [wallpaperId]: position },
+          wallpaper: wallpaperId === "city" ? "city" : "custom",
+          positionX: position.positionX,
+          positionY: position.positionY,
+        };
+        validateSettings(next);
+        await adapter.write({ settings: next });
       }),
     subscribe: (listener) => adapter.subscribe(listener),
   };

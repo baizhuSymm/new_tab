@@ -37,6 +37,15 @@ export interface NoteDraft {
   text: string;
   updatedAt: number;
 }
+export interface ScheduleEvent {
+  id: string;
+  title: string;
+  startAt: string;
+  endAt: string | null;
+  description: string | null;
+  order: number;
+  updatedAt: number;
+}
 export interface RecentEntry {
   id: string;
   url: string;
@@ -77,6 +86,9 @@ export interface Settings {
   wallpaper: "city" | "custom";
   positionX: number;
   positionY: number;
+  theme: "light" | "dark";
+  wallpaperId: string;
+  wallpaperPositions: Record<string, { positionX: number; positionY: number }>;
 }
 export interface Layout {
   version: 1;
@@ -93,6 +105,8 @@ export interface EntityMap {
   task: Task;
   note: Note;
   recent: RecentEntry;
+  schedule: ScheduleEvent;
+  wallpaper: WallpaperAsset;
 }
 export interface AppSnapshot {
   shortcuts: Shortcut[];
@@ -100,6 +114,8 @@ export interface AppSnapshot {
   tasks: Task[];
   notes: Note[];
   recent: RecentEntry[];
+  schedules: ScheduleEvent[];
+  wallpapers: WallpaperAsset[];
   settings: Settings;
   layout: Layout;
   draft: NoteDraft;

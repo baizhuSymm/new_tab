@@ -28,6 +28,8 @@ export function validateEntity<K extends keyof EntityMap>(
     task: ["title", "description"],
     note: ["text"],
     recent: ["name", "url", "icon"],
+    schedule: ["title"],
+    wallpaper: [],
   };
   if (strings[kind].some((field) => typeof value[field] !== "string"))
     throw Error("本地记录字段不完整");
@@ -37,6 +39,8 @@ export function validateEntity<K extends keyof EntityMap>(
     task: ["order", "updatedAt"],
     note: ["createdAt", "updatedAt"],
     recent: ["openedAt"],
+    schedule: ["order", "updatedAt"],
+    wallpaper: [],
   };
   if (numbers[kind].some((field) => !finite(value[field])))
     throw Error("本地记录数值不正确");
@@ -81,6 +85,20 @@ export function validateEntity<K extends keyof EntityMap>(
     )
       throw Error("待办内容格式不正确");
   }
+  if (kind === "schedule") {
+    const event = value as unknown as EntityMap["schedule"];
+    const start = Date.parse(event.startAt);
+    const end = event.endAt === null ? null : Date.parse(event.endAt);
+    if (
+      !Number.isFinite(start) ||
+      new Date(start).toISOString() !== event.startAt ||
+      (event.endAt !== null && (!Number.isFinite(end) || new Date(end!).toISOString() !== event.endAt || end! <= start)) ||
+      (event.description !== null && typeof event.description !== "string") ||
+      !event.title.trim() || event.title.length > 200 ||
+      (event.description?.length ?? 0) > 2000
+    ) throw Error("日程日期或内容格式不正确");
+  }
+  if (kind === "wallpaper") validateWallpaper(value as unknown as WallpaperAsset);
 }
 export function validateSettings(s: Settings) {
   if (
@@ -97,6 +115,14 @@ export function validateSettings(s: Settings) {
     !position(s.positionY)
   )
     throw Error("壁纸设置格式不正确");
+  if (
+    (s.theme !== "light" && s.theme !== "dark") ||
+    typeof s.wallpaperId !== "string" ||
+    !record(s.wallpaperPositions) ||
+    Object.values(s.wallpaperPositions).some(
+      (entry) => !record(entry) || !position(entry.positionX) || !position(entry.positionY),
+    )
+  ) throw Error("主题或壁纸设置格式不正确");
   const c = s.city;
   if (
     c !== null &&
