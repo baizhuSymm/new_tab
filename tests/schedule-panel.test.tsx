@@ -38,10 +38,13 @@ describe("schedule panel", () => {
   test("shows saved appointments and all-schedules view", async () => {
     const repository = createRepository(memoryAdapter());
     const snapshot = await repository.load();
+    const futureStart = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .slice(0, 16);
     render(<ScheduleHost snapshot={snapshot} repository={repository}><SchedulePanel /></ScheduleHost>);
     await userEvent.click(within(screen.getByRole("region", { name: "日程管理" })).getAllByRole("button", { name: "添加日程" })[0]);
     await userEvent.type(screen.getByLabelText("标题"), "项目评审");
-    fireEvent.change(screen.getByLabelText("开始时间"), { target: { value: "2026-10-01T09:00" } });
+    fireEvent.change(screen.getByLabelText("开始时间"), { target: { value: futureStart } });
     await userEvent.click(screen.getByRole("button", { name: "保存" }));
     expect(await screen.findByText("项目评审")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "全部日程" }));
