@@ -255,6 +255,9 @@ test("IME enter does not submit, local search keyboard opens a real target in a 
   expect(context.pages()).toHaveLength(1);
   await input.dispatchEvent("compositionend");
   await input.press("ArrowDown");
+  await context.route("https://github.com/**", (route) =>
+    route.fulfill({ status: 200, body: "ok" }),
+  );
   const popup = context.waitForEvent("page");
   await input.press("Enter");
   const opened = await popup;

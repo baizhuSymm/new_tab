@@ -111,3 +111,53 @@
 @media (max-width: 540px) {
   .toolTile { flex-basis: 76px; width: 76px; min-height: 48px; padding: 0 2px; }
 }
+.center { padding-top: 18px; min-width: 0; }
+.centerBack { display: inline-flex; align-items: center; gap: 7px; padding: 0; border: 0; background: none; color: var(--accent); font-size: 13px; margin-bottom: 20px; }
+.centerGrid { display: grid; grid-template-columns: 190px minmax(0, 1.1fr) minmax(320px, 0.9fr); gap: 30px; min-width: 0; }
+.centerIntro { min-width: 0; }
+.centerIntro h1 { font-size: 30px; font-weight: 650; line-height: 1.2; }
+.centerIntro p { color: var(--muted); font-size: 13px; line-height: 1.5; margin-top: 12px; }
+.categories { display: flex; flex-direction: column; gap: 5px; margin-top: 26px; }
+.categories button { text-align: left; border: 0; background: transparent; font-size: 14px; padding: 11px 13px; }
+.categories button:hover, .categories .categoryActive { background: var(--soft-accent); color: var(--accent); }
+.centerList, .previewColumn { min-width: 0; }
+.centerList { border-left: 1px solid var(--line); padding-left: 24px; }
+.centerList h2, .previewColumn h2 { font-size: 17px; margin: 2px 0 20px; }
+.toolRows { display: grid; gap: 8px; }
+.toolRow { display: flex; align-items: center; gap: 10px; min-width: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 9px 12px; }
+.rowSelected { background: var(--soft-accent); border-color: var(--soft-accent-border); }
+.previewButton { display: flex; align-items: center; flex: 1; min-width: 0; gap: 12px; padding: 0; border: 0; background: transparent; text-align: left; }
+.previewButton:hover { background: transparent; }
+.rowIcon { width: 48px; height: 48px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 8px; background: var(--soft-accent); color: var(--accent); }
+.rowText { display: grid; gap: 5px; min-width: 0; }
+.rowText strong { font-size: 15px; font-weight: 600; }
+.rowText small { font-size: 12px; color: var(--muted); line-height: 1.35; overflow-wrap: anywhere; }
+.toggleButton { flex: 0 0 auto; border-radius: 999px; border-color: var(--accent); background: var(--accent); color: #fff; font-size: 12px; min-width: 92px; padding: 8px 10px; }
+.toggleButton:hover { background: var(--accent); filter: brightness(0.9); }
+.addedButton { color: var(--accent); background: var(--soft-accent); border-color: var(--soft-accent-border); }
+.addedButton:hover { background: var(--soft-accent); }
+.centerNotice { min-height: 20px; color: var(--accent); font-size: 12px; margin-top: 10px; }
+.emptyList { color: var(--muted); font-size: 13px; padding: 22px 0; }
+.previewColumn { border-left: 1px solid var(--line); padding-left: 24px; }
+.previewHeading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.previewHeading span { color: var(--muted); font-size: 12px; }
+.previewEmpty { color: var(--muted); font-size: 13px; }
+@media (max-width: 1050px) {
+  .centerGrid { grid-template-columns: 150px minmax(0, 1fr); gap: 20px; }
+  .previewColumn { grid-column: 2; }
+}
+@media (max-width: 760px) {
+  .centerGrid { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .centerIntro h1 { font-size: 25px; }
+  .categories { flex-direction: row; overflow-x: auto; margin-top: 16px; gap: 4px; }
+  .categories button { flex: 0 0 auto; padding: 8px 12px; }
+  .centerList, .previewColumn { grid-column: 1; border-left: 0; padding-left: 0; }
+  .centerList h2, .previewColumn h2 { margin-bottom: 12px; }
+}
+@media (max-width: 400px) {
+  .toolRow { padding: 8px; gap: 6px; }
+  .rowIcon { width: 40px; height: 40px; }
+  .rowText strong { font-size: 13px; }
+  .rowText small { font-size: 11px; }
+  .toggleButton { min-width: 70px; padding: 6px; font-size: 11px; }
+}

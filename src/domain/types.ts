@@ -1,5 +1,5 @@
 export type SearchEngine = "bing" | "baidu" | "google";
-export type AppView = "home" | "tasks" | "notes";
+export type AppView = "home" | "tools" | "tasks" | "notes";
 export interface ToolSelection {
   version: 1;
   ids: string[];

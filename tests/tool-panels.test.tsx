@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, expect, test, vi } from "vitest";
 import { getToolDefinition, toolDefinitions } from "../src/features/tools/registry";
@@ -40,7 +40,7 @@ test("translation input and language choices work without fake translation", asy
   const Panel = getToolDefinition("translator").Panel;
   render(<Panel />);
   const text = "你好，世界！".repeat(40);
-  await userEvent.type(screen.getByRole("textbox", { name: "待翻译文本" }), text);
+  fireEvent.change(screen.getByRole("textbox", { name: "待翻译文本" }), { target: { value: text } });
   await userEvent.selectOptions(screen.getByLabelText("目标语言"), "en");
   expect(screen.getByRole("textbox", { name: "待翻译文本" })).toHaveValue(text);
   await userEvent.click(screen.getByRole("button", { name: "翻译" }));

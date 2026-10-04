@@ -130,6 +130,9 @@ test("keyboard sorting and ordinary clicks remain available", async ({
   await page.getByRole("button", { name: "设置", exact: true }).click();
   await page.getByLabel("网站打开方式").selectOption("new");
   await page.keyboard.press("Escape");
+  await page.context().route("https://www.google.com/**", (route) =>
+    route.fulfill({ status: 200, body: "ok" }),
+  );
   const popup = page.waitForEvent("popup");
   await google.click();
   const opened = await popup;
@@ -296,7 +299,7 @@ test("homepage uses compact vertical spacing around AI and content modules", asy
     const spacing = await page.evaluate(() => {
       const content = document.querySelector("main > div");
       const body = content?.lastElementChild;
-      const aiTools = content?.querySelector('section[aria-label="AI 工具入口"]');
+      const aiTools = content?.querySelector('section[aria-label="首页工具栏"]');
       const leftColumn = document.querySelector('[data-column="left"]');
       const grid = leftColumn?.parentElement;
       const columns = leftColumn;

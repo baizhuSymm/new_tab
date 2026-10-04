@@ -9,12 +9,14 @@ import {
   X,
   Check,
   ArrowLeft,
+  Grid2X2,
 } from "lucide-react";
 import { AppProvider, useAppData } from "./AppProvider";
 import { IconButton } from "../ui/IconButton";
 import type { AppView, Layout, Shortcut } from "../domain/types";
 import { SearchBar } from "../features/search/SearchBar";
-import { AiTools } from "../features/ai-tools/AiTools";
+import { ToolBar } from "../features/tools/ToolBar";
+import { ToolCenter } from "../features/tools/ToolCenter";
 import { openDestination } from "../features/search/navigation";
 import { ShortcutGrid } from "../features/shortcuts/ShortcutGrid";
 import { TaskPanel } from "../features/tasks/TaskPanel";
@@ -53,6 +55,10 @@ function Shell() {
     setDraftLayout(null);
     setView(next);
   }
+  function backFromTools() {
+    navigate("home");
+    document.querySelector<HTMLButtonElement>('button[aria-label="首页"]')?.focus();
+  }
   function editLayout() {
     setPanel(null);
     setView("home");
@@ -82,6 +88,7 @@ function Shell() {
   const crop = getWallpaperPosition(settings, settings.wallpaperId);
   const nav = [
     { id: "home", label: "首页", icon: House },
+    { id: "tools", label: "工具中心", icon: Grid2X2 },
     { id: "tasks", label: "待办管理", icon: SquareCheck },
     { id: "notes", label: "便签管理", icon: StickyNote },
   ] as const;
@@ -152,7 +159,7 @@ function Shell() {
         </header>
         <div className={styles.content}>
           <SearchBar onOpen={open} />
-          {view === "home" && <AiTools />}
+          {view === "home" && <ToolBar selection={snapshot.toolSelection} onAdd={() => navigate("tools")} />}
           {error && (
             <div className={styles.error} role="alert">
               <span>保存或读取失败：{error}</span>
@@ -185,7 +192,7 @@ function Shell() {
             </div>
           )}
           <div className={styles.body}>
-            {view !== "home" && (
+            {view !== "home" && view !== "tools" && (
               <button className={styles.back} onClick={() => navigate("home")}>
                 <ArrowLeft size={15} />
                 返回首页
@@ -210,6 +217,8 @@ function Shell() {
                   recent: <RecentStrip onOpen={open} />,
                 }}
               </ModuleGrid>
+            ) : view === "tools" ? (
+              <ToolCenter onBack={backFromTools} />
             ) : (
               <div className={styles.management}>
                 {view === "tasks" ? (
