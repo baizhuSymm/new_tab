@@ -8,7 +8,9 @@ import type {
   WallpaperAsset,
   ScheduleEvent,
   WeatherCache,
+  ToolSelection,
 } from "../domain/types";
+import { defaultToolSelection, isToolId, type ToolId } from "../domain/tools";
 import {
   defaultLayout,
   defaultSettings,
@@ -24,6 +26,7 @@ import {
   validateDraft,
   validateWallpaper,
   validateWeather,
+  validateToolSelection,
 } from "./validate";
 export interface Repository {
   load(): Promise<AppSnapshot>;
@@ -39,6 +42,7 @@ export interface Repository {
   clearRecent(): Promise<void>;
   deleteGroup(id: string): Promise<void>;
   reorderShortcuts(groupId: string, ids: string[]): Promise<void>;
+  setToolAdded(id: ToolId, added: boolean): Promise<void>;
   applyWallpaper(
     asset: WallpaperAsset | null,
     patch: Pick<Partial<Settings>, "wallpaper" | "positionX" | "positionY">,
@@ -167,6 +171,7 @@ export function createRepository(adapter: StorageAdapter): Repository {
           draft: data.draft as NoteDraft,
           wallpaper: (data.wallpaper ?? null) as WallpaperAsset | null,
           weather: (data.weather ?? null) as WeatherCache | null,
+          toolSelection: (data.toolSelection ?? defaultToolSelection) as ToolSelection,
         });
       }),
     save: (kind, entity) =>
@@ -190,6 +195,20 @@ export function createRepository(adapter: StorageAdapter): Repository {
         const settings = { ...(data.settings as Settings), ...patch };
         validateSettings(settings);
         await adapter.write({ settings });
+      }),
+    setToolAdded: (id, added) =>
+      locked(async () => {
+        if (!isToolId(id)) throw Error("未知工具");
+        const data = await adapter.readAll();
+        const selection = (data.toolSelection ?? defaultToolSelection) as ToolSelection;
+        validateToolSelection(selection);
+        let ids = selection.ids.filter(isToolId);
+        if (added) {
+          if (!ids.includes(id)) ids.push(id);
+        } else {
+          ids = ids.filter((current) => current !== id);
+        }
+        await adapter.write({ toolSelection: { version: 1, ids } satisfies ToolSelection });
       }),
     saveLayout: (layout) =>
       locked(() => {

@@ -6,6 +6,7 @@ import type {
   NoteDraft,
   WallpaperAsset,
   WeatherCache,
+  ToolSelection,
 } from "../domain/types";
 import { normalizeWebUrl } from "../domain/urls";
 import { validDueDate } from "../features/tasks/taskDates";
@@ -196,7 +197,18 @@ export function validateWeather(cache: WeatherCache) {
   )
     throw Error("天气缓存格式不正确");
 }
+export function validateToolSelection(value: unknown): asserts value is ToolSelection {
+  if (
+    !record(value) ||
+    value.version !== 1 ||
+    !Array.isArray(value.ids) ||
+    value.ids.length > 32 ||
+    value.ids.some((id: unknown) => typeof id !== "string" || !id || id.length > 80) ||
+    new Set(value.ids).size !== value.ids.length
+  ) throw Error("工具选择数据格式不正确");
+}
 export function validateSnapshot(snapshot: AppSnapshot) {
+  validateToolSelection(snapshot.toolSelection);
   validateSettings(snapshot.settings);
   validateLayout(snapshot.layout);
   validateDraft(snapshot.draft);

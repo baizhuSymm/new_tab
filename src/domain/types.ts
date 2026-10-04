@@ -1,5 +1,9 @@
 export type SearchEngine = "bing" | "baidu" | "google";
 export type AppView = "home" | "tasks" | "notes";
+export interface ToolSelection {
+  version: 1;
+  ids: string[];
+}
 export type ModuleId = "shortcuts" | "recent" | "schedule" | "tasks" | "notes";
 export type LayoutColumn = "left" | "right";
 export interface Shortcut {
@@ -110,6 +114,7 @@ export interface EntityMap {
   wallpaper: WallpaperAsset;
 }
 export interface AppSnapshot {
+  toolSelection: ToolSelection;
   shortcuts: Shortcut[];
   groups: ShortcutGroup[];
   tasks: Task[];
