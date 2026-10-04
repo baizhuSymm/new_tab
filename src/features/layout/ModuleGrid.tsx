@@ -24,7 +24,7 @@ const labels: Record<ModuleId, string> = {
   shortcuts: "常用网站",
   tasks: "待办事项",
   notes: "快速记录",
-  recent: "最近打开",
+  recent: "浏览历史",
   schedule: "日程管理",
 };
 const columns: LayoutColumn[] = ["left", "right"];

@@ -24,7 +24,7 @@ import { SchedulePanel } from "../features/schedule/SchedulePanel";
 import { QuickNote } from "../features/notes/QuickNote";
 import { useNoteDraft } from "../features/notes/useNoteDraft";
 import { ModuleGrid } from "../features/layout/ModuleGrid";
-import { RecentStrip } from "../features/recent/RecentStrip";
+import { BrowserHistory } from "../features/history/BrowserHistory";
 import { SettingsPanel } from "../features/settings/SettingsPanel";
 import { WallpaperPanel } from "../features/wallpaper/WallpaperPanel";
 import { builtinWallpapers, getWallpaperPosition } from "../domain/wallpapers";
@@ -64,23 +64,8 @@ function Shell() {
     setView("home");
     setDraftLayout(structuredClone(snapshot.layout));
   }
-  function open(site: Pick<Shortcut, "name" | "url" | "icon">, record = true) {
-    if (!record) {
-      openDestination(site.url, settings.openTarget);
-      return;
-    }
-    const action = () =>
-      repository.recordRecent({
-        ...site,
-        id: crypto.randomUUID(),
-        openedAt: Date.now(),
-      });
-    if (settings.openTarget === "new") {
-      openDestination(site.url, "new");
-      void run(action);
-    } else {
-      void run(action).finally(() => openDestination(site.url, "current"));
-    }
+  function open(site: Pick<Shortcut, "name" | "url" | "icon">) {
+    openDestination(site.url, settings.openTarget);
   }
   const selectedWallpaper = builtinWallpapers.find((item) => item.id === settings.wallpaperId);
   const selectedUpload = snapshot.wallpapers.find((item) => item.id === settings.wallpaperId);
@@ -214,7 +199,7 @@ function Shell() {
                       onHistory={() => navigate("notes")}
                     />
                   ),
-                  recent: <RecentStrip onOpen={open} />,
+                  recent: <BrowserHistory onOpen={(url) => openDestination(url, settings.openTarget)} />,
                 }}
               </ModuleGrid>
             ) : view === "tools" ? (

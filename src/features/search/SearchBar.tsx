@@ -8,10 +8,7 @@ import styles from "./search.module.css";
 export function SearchBar({
   onOpen,
 }: {
-  onOpen: (
-    site: Pick<Shortcut, "name" | "url" | "icon">,
-    record?: boolean,
-  ) => void;
+  onOpen: (site: Pick<Shortcut, "name" | "url" | "icon">) => void;
 }) {
   const { snapshot, repository, run } = useAppData();
   const [text, setText] = useState(""),
@@ -24,7 +21,7 @@ export function SearchBar({
   function submit() {
     const result = resolveSearch(text, snapshot.settings.searchEngine);
     if (result) {
-      onOpen({ name: text.trim(), url: result.url, icon: "" }, false);
+      onOpen({ name: text.trim(), url: result.url, icon: "" });
       setFocused(false);
     } else if (text.trim()) setError("只支持网页地址和普通搜索");
   }

@@ -15,7 +15,7 @@ test("the last website tile opens the add website form", async ({ page }) => {
   await expect(page.getByRole("dialog", { name: "添加网站" })).toBeVisible();
 });
 
-test("recent websites use full width rows", async ({ page }) => {
+test("browser history preview does not show old app-local recent records", async ({ page }) => {
   await page.setViewportSize({ width: 724, height: 668 });
   await page.goto("/");
   await page.evaluate(() => {
@@ -30,14 +30,8 @@ test("recent websites use full width rows", async ({ page }) => {
     }
   });
   await page.reload();
-  const recent = page.getByRole("region", { name: "最近打开" });
-  const first = await recent.getByRole("button", { name: /示例甲/ }).boundingBox();
-  const second = await recent.getByRole("button", { name: /示例乙/ }).boundingBox();
-  const region = await recent.boundingBox();
-  expect(first).not.toBeNull();
-  expect(second).not.toBeNull();
-  expect(region).not.toBeNull();
-  expect(second!.y).toBeGreaterThanOrEqual(first!.y + first!.height);
-  expect(first!.width).toBeGreaterThan(region!.width * 0.8);
-  expect(second!.width).toBeGreaterThan(region!.width * 0.8);
+  const history = page.getByRole("region", { name: "浏览历史" });
+  await expect(history.getByText("浏览历史仅在浏览器扩展中显示")).toBeVisible();
+  await expect(history.getByText("示例甲")).toHaveCount(0);
+  await expect(history.getByText("示例乙")).toHaveCount(0);
 });

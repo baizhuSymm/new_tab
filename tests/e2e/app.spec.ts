@@ -265,7 +265,7 @@ test("IME enter does not submit, local search keyboard opens a real target in a 
   await opened.close();
   await expect(
     page
-      .getByRole("region", { name: "最近打开" })
-      .getByRole("button", { name: /GitHub/ }),
+      .getByRole("region", { name: "浏览历史" })
+      .getByText("浏览历史仅在浏览器扩展中显示"),
   ).toBeVisible();
 });

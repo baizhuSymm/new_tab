@@ -63,14 +63,6 @@ export function SettingsPanel({
             <option value="dark">深色</option>
           </select>
         </label>
-        <label className="check-label">
-          <input
-            type="checkbox"
-            checked={settings.recordRecent}
-            onChange={(e) => save({ recordRecent: e.target.checked })}
-          />
-          记录最近打开的网站
-        </label>
         <hr className="divider" />
         <div className="form-row">
           <button onClick={onWeather}>天气城市</button>
