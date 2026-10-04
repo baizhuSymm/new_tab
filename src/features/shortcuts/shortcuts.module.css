@@ -24,6 +24,15 @@
   touch-action: manipulation;
   cursor: grab;
 }
+.addSite {
+  color: var(--accent);
+  cursor: pointer;
+  border-radius: 6px;
+}
+.addSite:hover,
+.addSite:focus-visible {
+  background: var(--soft-accent);
+}
 .logo {
   width: 48px;
   height: 48px;

@@ -174,6 +174,15 @@ export function ShortcutGrid({ onOpen }: { onOpen: (site: Shortcut) => void }) {
                 }}
               />
             ))}
+            <button
+              type="button"
+              className={`${styles.site} ${styles.addSite}`}
+              aria-label="在网站列表末尾添加网站"
+              onClick={() => setEditing("new")}
+            >
+              <span className={styles.logo}><Plus size={24} strokeWidth={1.8} /></span>
+              <span className={styles.name}>添加</span>
+            </button>
           </div>
         </SortableContext>
       </DndContext>

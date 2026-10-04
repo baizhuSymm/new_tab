@@ -35,7 +35,7 @@ export function ToolBar({ selection, onAdd }: { selection: ToolSelection; onAdd:
             );
           })}
         </div>
-        <button type="button" className={`${styles.toolTile} ${styles.addTile}`} aria-label="添加工具" onClick={onAdd}>
+        <button type="button" className={styles.toolTile} aria-label="添加工具" onClick={onAdd}>
           <Plus size={22} strokeWidth={1.8} />
           <span>添加</span>
         </button>

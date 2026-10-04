@@ -24,7 +24,20 @@ export function RecentStrip({
   }
   return (
     <section className={styles.strip} aria-label="最近打开">
-      <h2>最近打开</h2>
+      <div className={styles.header}>
+        <h2>最近打开</h2>
+        {snapshot.recent.length > 0 && (
+          <IconButton
+            label="清空最近打开"
+            onClick={() => {
+              if (confirm("清空最近打开记录？"))
+                void run(() => repository.clearRecent());
+            }}
+          >
+            <Trash2 size={16} />
+          </IconButton>
+        )}
+      </div>
       <div className={styles.items}>
         {snapshot.recent.map((site) => (
           <button
@@ -33,12 +46,12 @@ export function RecentStrip({
             onClick={() => onOpen(site)}
             title={site.url}
           >
-            <SiteIcon name={site.icon} size={25} />
+            <SiteIcon name={site.icon} size={32} />
             <span>
               {site.name}
               <small>{ago(site.openedAt)}</small>
             </span>
-            <ArrowUpRight size={12} />
+            <ArrowUpRight size={16} />
           </button>
         ))}
         {!snapshot.recent.length && (
@@ -49,17 +62,6 @@ export function RecentStrip({
           </p>
         )}
       </div>
-      {snapshot.recent.length > 0 && (
-        <IconButton
-          label="清空最近打开"
-          onClick={() => {
-            if (confirm("清空最近打开记录？"))
-              void run(() => repository.clearRecent());
-          }}
-        >
-          <Trash2 size={16} />
-        </IconButton>
-      )}
     </section>
   );
 }

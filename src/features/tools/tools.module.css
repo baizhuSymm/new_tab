@@ -106,7 +106,6 @@
 .toolTile svg { color: var(--accent); }
 .toolTile:hover, .toolTileActive { background: var(--soft-accent); }
 .toolTileActive { border-color: var(--soft-accent-border); }
-.addTile { border-color: var(--line); border-style: dashed; }
 .barPanel { margin-top: 12px; }
 @media (max-width: 540px) {
   .toolTile { flex-basis: 76px; width: 76px; min-height: 48px; padding: 0 2px; }

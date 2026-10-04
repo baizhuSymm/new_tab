@@ -27,9 +27,14 @@
 .bar select {
   width: 78px;
   border: 0;
-  font-size: 12px;
   background: transparent;
-  padding: 6px;
+  color: var(--text);
+  font-size: 14px;
+  padding: 0 4px;
+}
+.bar select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 .submit {
   display: flex;
