@@ -85,3 +85,29 @@
   .openClawEmpty { min-height: 150px; }
   .languageRow { grid-template-columns: 1fr; }
 }
+.barSection { margin: 15px 0; min-width: 0; }
+.barRow { display: flex; align-items: flex-start; min-width: 0; }
+.barScroller { display: flex; flex: 0 1 auto; min-width: 0; overflow-x: auto; scrollbar-width: thin; }
+.toolTile {
+  flex: 0 0 78px;
+  width: 78px;
+  min-height: 50px;
+  padding: 0 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 13px;
+}
+.toolTile svg { color: var(--accent); }
+.toolTile:hover, .toolTileActive { background: var(--soft-accent); }
+.toolTileActive { border-color: var(--soft-accent-border); }
+.addTile { border-color: var(--line); border-style: dashed; }
+.barPanel { margin-top: 12px; }
+@media (max-width: 540px) {
+  .toolTile { flex-basis: 76px; width: 76px; min-height: 48px; padding: 0 2px; }
+}
