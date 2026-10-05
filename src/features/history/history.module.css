@@ -1,6 +1,7 @@
 .section { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .header { display: flex; align-items: center; justify-content: space-between; min-height: 32px; gap: 12px; }
 .header h2 { font-size: 14px; white-space: nowrap; }
+.actions { display: flex; align-items: center; gap: 14px; }
 .all { display: inline-flex; align-items: center; gap: 3px; padding: 4px 0; border: 0; background: transparent; color: var(--accent); font-size: 12px; white-space: nowrap; }
 .all:hover { text-decoration: underline; }
 .message { color: var(--muted); font-size: 12px; line-height: 1.6; }
@@ -11,6 +12,7 @@
 .item { display: flex; align-items: center; gap: 12px; width: 100%; min-width: 0; padding: 9px 10px; border: 0; border-radius: 6px; background: transparent; text-align: left; }
 .item:hover, .item:focus-visible { background: var(--soft-accent); }
 .item > svg { flex-shrink: 0; color: var(--muted); }
+.siteIcon { flex-shrink: 0; width: 24px; height: 24px; object-fit: contain; }
 .details { display: grid; flex: 1; min-width: 0; gap: 3px; }
 .details strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 500; }
 .details small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: 11px; }

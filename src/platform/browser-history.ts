@@ -7,6 +7,7 @@ export type BrowserHistoryEntry = {
 };
 
 const permission = { permissions: ["history" as const] };
+const faviconPermission = { permissions: ["favicon" as const] };
 
 export function isBrowserHistoryAvailable() {
   return isExtension() && "permissions" in chrome;
@@ -17,7 +18,28 @@ export async function hasBrowserHistoryAccess() {
 }
 
 export function requestBrowserHistoryAccess() {
-  return chrome.permissions.request(permission);
+  return chrome.permissions.request({ permissions: ["history", "favicon"] });
+}
+
+export async function hasBrowserFaviconAccess() {
+  if (!isBrowserHistoryAvailable()) return false;
+  try {
+    return await chrome.permissions.contains(faviconPermission);
+  } catch {
+    return false;
+  }
+}
+
+export function requestBrowserFaviconAccess() {
+  return chrome.permissions.request(faviconPermission);
+}
+
+export function getBrowserFaviconUrl(pageUrl: string) {
+  if (!isExtension()) return null;
+  const url = new URL(chrome.runtime.getURL("/_favicon/"));
+  url.searchParams.set("pageUrl", pageUrl);
+  url.searchParams.set("size", "32");
+  return url.toString();
 }
 
 export async function getRecentBrowserHistory(): Promise<BrowserHistoryEntry[]> {

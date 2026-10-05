@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import { ArrowUpRight, History } from "lucide-react";
+import { ArrowUpRight, Globe } from "lucide-react";
 import {
+  getBrowserFaviconUrl,
   getRecentBrowserHistory,
+  hasBrowserFaviconAccess,
   hasBrowserHistoryAccess,
   isBrowserHistoryAvailable,
   openNativeHistory,
+  requestBrowserFaviconAccess,
   requestBrowserHistoryAccess,
   type BrowserHistoryEntry,
 } from "../../platform/browser-history";
@@ -26,11 +29,13 @@ export function BrowserHistory({ onOpen }: { onOpen: (url: string) => void }) {
   const available = isBrowserHistoryAvailable();
   const [status, setStatus] = useState<Status>(available ? "checking" : "web");
   const [entries, setEntries] = useState<BrowserHistoryEntry[]>([]);
+  const [faviconAccess, setFaviconAccess] = useState(false);
 
   const load = useCallback(async () => {
     try {
       setStatus("loading");
       setEntries(await getRecentBrowserHistory());
+      setFaviconAccess(await hasBrowserFaviconAccess());
       setStatus("ready");
     } catch {
       setStatus("error");
@@ -82,21 +87,32 @@ export function BrowserHistory({ onOpen }: { onOpen: (url: string) => void }) {
       .catch(() => setStatus("permission"));
   }
 
+  function enableFavicons() {
+    void requestBrowserFaviconAccess()
+      .then((granted) => { if (granted) setFaviconAccess(true); })
+      .catch(() => setFaviconAccess(false));
+  }
+
   return (
     <section className={styles.section} aria-label="浏览历史">
       <div className={styles.header}>
         <h2>浏览历史</h2>
-        {available && (
-          <button className={styles.all} type="button" onClick={() => void openNativeHistory()}>
-            查看全部 <ArrowUpRight size={14} />
-          </button>
-        )}
+        <div className={styles.actions}>
+          {status === "ready" && !faviconAccess && (
+            <button className={styles.all} type="button" onClick={enableFavicons}>显示网站图标</button>
+          )}
+          {available && (
+            <button className={styles.all} type="button" onClick={() => void openNativeHistory()}>
+              查看全部 <ArrowUpRight size={14} />
+            </button>
+          )}
+        </div>
       </div>
       {status === "web" && <p className={styles.message}>浏览历史仅在浏览器扩展中显示</p>}
       {status === "checking" && <p className={styles.message}>正在检查访问权限…</p>}
       {status === "permission" && (
         <div className={styles.prompt}>
-          <p>启用后可在首页查看最近访问的网页。浏览器会询问是否允许读取浏览历史。</p>
+          <p>启用后可在首页查看最近访问的网页及网站图标。浏览器会询问是否允许读取浏览历史和网站图标。</p>
           <button type="button" onClick={enable}>启用浏览历史</button>
         </div>
       )}
@@ -111,7 +127,7 @@ export function BrowserHistory({ onOpen }: { onOpen: (url: string) => void }) {
         <div className={styles.items}>
           {entries.map((entry) => (
             <button className={styles.item} type="button" key={entry.url} title={entry.url} onClick={() => onOpen(entry.url)}>
-              <History size={18} aria-hidden="true" />
+              <HistorySiteIcon url={entry.url} enabled={faviconAccess} />
               <span className={styles.details}>
                 <strong>{entry.title}</strong>
                 <small>{new URL(entry.url).hostname} · {visitTime(entry.visitedAt)}</small>
@@ -124,4 +140,13 @@ export function BrowserHistory({ onOpen }: { onOpen: (url: string) => void }) {
       )}
     </section>
   );
+}
+
+function HistorySiteIcon({ url, enabled }: { url: string; enabled: boolean }) {
+  const [failed, setFailed] = useState(false);
+  const src = enabled ? getBrowserFaviconUrl(url) : null;
+  if (src && !failed) {
+    return <img className={styles.siteIcon} src={src} width={24} height={24} alt="" onError={() => setFailed(true)} />;
+  }
+  return <Globe size={24} aria-hidden="true" />;
 }
