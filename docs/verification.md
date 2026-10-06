@@ -1,5 +1,19 @@
 # 实施与验证记录
 
+## 2026-10-06 当前项目合入 main 前验证
+
+当前项目包含独立工具中心、首页工具栏、浏览器历史与网站图标，以及首页网站、日程、待办、便签布局调整。
+
+| 检查 | 实际命令 | 结果 |
+| --- | --- | --- |
+| 类型检查 | `node node_modules/typescript/bin/tsc --noEmit` | 退出码 0 |
+| 单元与组件测试 | `node node_modules/vitest/vitest.mjs run` | 18 个文件，69/69 通过 |
+| 生产扩展构建 | `node scripts/build.mjs` | Vite 构建及 manifest/入口/资源检查通过 |
+| 网页浏览器测试 | `node node_modules/@playwright/test/cli.js test --project=web` | 47/47 通过 |
+| 扩展浏览器测试 | 设置 `EXTENSION_CHROMIUM_PATH=C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe` 后运行 `node node_modules/@playwright/test/cli.js test --project=extension` | 1/1 通过：新标签覆盖、跨标签存储、重启恢复及 CSP 页面错误检查 |
+
+Playwright 自带 Chromium 仍在启动前报 `spawn UNKNOWN`。本机 Edge 运行期间 Vite 曾对测试 profile 的缓存文件报告 `EBUSY`，但扩展测试本身通过；该 profile 是独立测试目录，未使用日常浏览器资料。可选历史与网站图标权限的真实弹窗尚未由扩展套件覆盖。
+
 ## 2026-09-29 首页日程与个性化
 
 本次新增 schema v2 与布局 v2 迁移、网站分组 Tab、本地日程、主题/壁纸库和固定左右栏组件管理。此记录对应 `codex/home-enhancements` 分支。

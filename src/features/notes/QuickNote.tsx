@@ -88,8 +88,29 @@ export function QuickNote({
           </div>
         </div>
       )}
+      {!management && <RecentNotes onOpen={onHistory} />}
       {management && <NoteList />}
     </section>
+  );
+}
+function RecentNotes({ onOpen }: { onOpen?: () => void }) {
+  const { snapshot } = useAppData();
+  const recent = snapshot.notes
+    .slice()
+    .sort((a, b) => b.updatedAt - a.updatedAt || b.createdAt - a.createdAt)
+    .slice(0, 3);
+  if (!recent.length) return null;
+  return (
+    <div className={styles.recentList} aria-label="最近便签">
+      {recent.map((entry) => (
+        <button key={entry.id} type="button" onClick={onOpen} className={styles.recentNote}>
+          <span>{entry.text}</span>
+          <time dateTime={new Date(entry.updatedAt).toISOString()}>
+            {new Date(entry.updatedAt).toLocaleDateString("zh-CN", { month: "numeric", day: "numeric" })}
+          </time>
+        </button>
+      ))}
+    </div>
   );
 }
 function NoteList() {

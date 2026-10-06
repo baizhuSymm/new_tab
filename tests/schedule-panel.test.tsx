@@ -38,16 +38,15 @@ describe("schedule panel", () => {
   test("shows saved appointments and all-schedules view", async () => {
     const repository = createRepository(memoryAdapter());
     const snapshot = await repository.load();
-    const futureStart = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .slice(0, 16);
+    const now = new Date();
+    const todayStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}T09:00`;
     render(<ScheduleHost snapshot={snapshot} repository={repository}><SchedulePanel /></ScheduleHost>);
     await userEvent.click(within(screen.getByRole("region", { name: "日程管理" })).getAllByRole("button", { name: "添加日程" })[0]);
     await userEvent.type(screen.getByLabelText("标题"), "项目评审");
-    fireEvent.change(screen.getByLabelText("开始时间"), { target: { value: futureStart } });
+    fireEvent.change(screen.getByLabelText("开始时间"), { target: { value: todayStart } });
     await userEvent.click(screen.getByRole("button", { name: "保存" }));
     expect(await screen.findByText("项目评审")).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "全部日程" }));
+    await userEvent.click(screen.getByRole("button", { name: "查看全部日程" }));
     expect(screen.getByRole("dialog", { name: "全部日程" })).toHaveTextContent("项目评审");
   });
 

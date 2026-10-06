@@ -1,21 +1,20 @@
-.grid {
+.sites {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  row-gap: 8px;
+  gap: 8px 10px;
 }
 .tile {
   position: relative;
   min-width: 0;
-  flex: 0 0 78px;
-  width: 78px;
-  margin: 10px;
+  flex: 0 0 72px;
+  width: 72px;
 }
 .site {
   display: flex;
-  width: 78px;
+  width: 72px;
   min-height: 0;
-  padding: 15px;
+  padding: 8px 0;
   flex-direction: column;
   align-items: center;
   background: transparent;
@@ -34,26 +33,26 @@
   background: var(--soft-accent);
 }
 .logo {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .name {
-  width: 78px;
+  width: 72px;
   max-width: none;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 14px;
+  font-size: 12px;
 }
 .tile > .editSite,
 .tile > .deleteSite {
   position: absolute;
-  top: 15px;
-  width: 20px;
-  height: 20px;
+  top: 8px;
+  width: 18px;
+  height: 18px;
   padding: 3px;
   background: transparent;
   border: 0;
@@ -69,40 +68,14 @@
   background: rgba(182, 66, 66, 0.12);
 }
 .editSite {
-  left: 5px;
+  left: 3px;
 }
 .deleteSite {
-  right: 5px;
+  right: 3px;
   color: #b64242;
-}
-.groupTabs {
-  display: flex;
-  gap: 4px;
-  max-width: 100%;
-  margin: 0 10px 6px;
-  overflow-x: auto;
-  scrollbar-width: thin;
-}
-.groupTab {
-  flex: 0 0 auto;
-  padding: 7px 10px;
-  color: var(--muted);
-  background: transparent;
-  border: 0;
-  border-bottom: 2px solid transparent;
-  white-space: nowrap;
-}
-.activeGroupTab {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
 }
 .dragging {
   z-index: 9;
   background: var(--soft-accent);
   border-radius: 6px;
-}
-@media (max-width: 680px) {
-  .grid {
-    justify-content: space-around;
-  }
 }

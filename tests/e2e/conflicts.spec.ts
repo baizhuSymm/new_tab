@@ -24,7 +24,7 @@ test("an unresolved local draft survives navigating to notes and resolving the c
   await page.reload();
   await expect(page.getByLabel("便签草稿")).toHaveValue("这是我的本地内容");
 });
-test("task moves from later to today at local midnight", async ({ page }) => {
+test("future task stays visible and updates its date label at local midnight", async ({ page }) => {
   await page.clock.install({ time: new Date("2026-09-26T23:59:58+08:00") });
   await page.goto("/");
   await page.getByRole("button", { name: "添加待办", exact: true }).click();
@@ -34,11 +34,9 @@ test("task moves from later to today at local midnight", async ({ page }) => {
     .getByRole("dialog")
     .getByRole("button", { name: "保存", exact: true })
     .click();
-  await expect(
-    page.getByRole("checkbox", { name: "完成 午夜的任务" }),
-  ).toHaveCount(0);
+  const row = page.getByRole("region", { name: "未完成事项" })
+    .getByRole("checkbox", { name: "完成 午夜的任务" }).locator("xpath=..");
+  await expect(row).toContainText("09-27");
   await page.clock.fastForward(3000);
-  await expect(
-    page.getByRole("checkbox", { name: "完成 午夜的任务" }),
-  ).toBeVisible();
+  await expect(row).toContainText("—");
 });

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { sortUpcomingSchedules, toLocalDateTimeInput, fromLocalDateTimeInput } from "../src/features/schedule/scheduleDates";
+import { sortUpcomingSchedules, schedulesForDate, toLocalDateTimeInput, fromLocalDateTimeInput } from "../src/features/schedule/scheduleDates";
 import type { ScheduleEvent } from "../src/domain/types";
 
 const event = (id: string, startAt: string, endAt: string | null = null): ScheduleEvent => ({
@@ -23,5 +23,15 @@ describe("schedule date helpers", () => {
     expect(fromLocalDateTimeInput(toLocalDateTimeInput(iso))?.toISOString()).toBe(iso);
     expect(toLocalDateTimeInput("not-a-date")).toBe("");
     expect(fromLocalDateTimeInput("2026-02-30T10:00")).toBeNull();
+  });
+
+  test("finds appointments on a selected local date including overnight events", () => {
+    const instant = (day: number, hour: number) => new Date(2026, 9, day, hour).toISOString();
+    expect(schedulesForDate([
+      event("tomorrow", instant(5, 9)),
+      event("overnight", instant(3, 23), instant(4, 2)),
+      event("today", instant(4, 10)),
+      event("ended-midnight", instant(3, 22), instant(4, 0)),
+    ], "2026-10-04").map((item) => item.id)).toEqual(["overnight", "today"]);
   });
 });

@@ -92,7 +92,7 @@ test("mobile drawers and layout controls fit; clock preference persists", async 
   await page.getByLabel("时间格式").selectOption("12");
   await page.screenshot({ path: "docs/qa/settings-mobile.png" });
   await page.keyboard.press("Escape");
-  await expect(page.locator("time")).toHaveText("04:42");
+  await expect(page.locator("header time")).toHaveText("04:42");
   await page.getByRole("button", { name: "编辑布局", exact: true }).click();
   expect(
     await page.evaluate(

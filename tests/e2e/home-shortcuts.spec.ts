@@ -38,29 +38,6 @@ test("homepage owns site editing and confirmed deletion without category labels"
   ).toHaveCount(0);
 });
 
-test("group tabs switch sites and support keyboard navigation", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: "整理网站", exact: true }).click();
-  await page.getByRole("button", { name: "新增分组", exact: true }).click();
-  await page.getByLabel("分组名称").fill("工作");
-  await page.getByRole("button", { name: "创建分组", exact: true }).click();
-  const tabs = page.getByRole("tablist", { name: "网站分组" });
-  const work = tabs.getByRole("tab", { name: "工作" });
-  await expect(work).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByText("这个分组还没有网站")).toBeVisible();
-  await work.focus();
-  await page.keyboard.press("ArrowLeft");
-  const common = tabs.getByRole("tab", { name: "常用" });
-  await expect(common).toBeFocused();
-  await expect(common).toHaveAttribute("aria-selected", "true");
-  await page.keyboard.press("End");
-  await expect(work).toBeFocused();
-  await page.keyboard.press("Home");
-  await expect(common).toBeFocused();
-  await page.setViewportSize({ width: 320, height: 844 });
-  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
-});
-
 test("normal mode pointer drag persists without opening a site", async ({
   page,
   context,
@@ -256,17 +233,17 @@ test("edit corner controls fit desktop and narrow screens without layout shifts"
   }
 });
 
-test("compact sites have larger icons and borderless circular hover actions", async ({
+test("compact sites have smaller icons and borderless circular hover actions", async ({
   page,
 }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "整理网站", exact: true }).click();
   const tile = page.locator('[data-site-id="seed-google"]');
   const icon = tile.locator("img");
-  await expect(icon).toHaveAttribute("width", "48");
+  await expect(icon).toHaveAttribute("width", "40");
   const box = await tile.boundingBox();
-  expect(box!.width).toBe(78);
-  expect(box!.height).toBeLessThanOrEqual(110);
+  expect(box!.width).toBe(72);
+  expect(box!.height).toBeLessThanOrEqual(85);
   const rowGap = await tile.evaluate((el) =>
     parseFloat(getComputedStyle(el.parentElement!).rowGap),
   );

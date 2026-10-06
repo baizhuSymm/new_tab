@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Pencil, ChevronDown, ChevronRight } from "lucide-react";
+import { Plus, Pencil } from "lucide-react";
 import { useAppData } from "../../app/AppProvider";
 import type { Task } from "../../domain/types";
 import { Dialog } from "../../ui/Dialog";
@@ -7,21 +7,21 @@ import { IconButton } from "../../ui/IconButton";
 import { useClock } from "../clock/useClock";
 import { classifyTask, localDate, validDueDate } from "./taskDates";
 import styles from "./tasks.module.css";
-export function TaskPanel({ management = false }: { management?: boolean }) {
+export function TaskPanel() {
   const { snapshot, repository, run } = useAppData();
   const today = localDate(useClock());
-  const [tab, setTab] = useState<"today" | "later">("today"),
-    [editing, setEditing] = useState<Task | "new" | null>(null),
-    [completed, setCompleted] = useState(false);
+  const [editing, setEditing] = useState<Task | "new" | null>(null);
   const tasks = snapshot.tasks
-    .filter((t) => classifyTask(t, today) === tab)
+    .filter((t) => classifyTask(t, today) !== "completed")
     .sort(
       (a, b) =>
         (a.dueDate ?? "9999").localeCompare(b.dueDate ?? "9999") ||
         (a.dueTime ?? "99").localeCompare(b.dueTime ?? "99") ||
         a.order - b.order,
     );
-  const done = snapshot.tasks.filter((t) => t.completedAt !== null);
+  const done = snapshot.tasks
+    .filter((t) => t.completedAt !== null)
+    .sort((a, b) => (b.completedAt ?? 0) - (a.completedAt ?? 0));
   const row = (task: Task) => (
     <div
       key={task.id}
@@ -46,7 +46,7 @@ export function TaskPanel({ management = false }: { management?: boolean }) {
       >
         {task.dueDate && task.dueDate < today && task.completedAt === null
           ? "逾期"
-          : tab === "later" && task.dueDate
+          : task.dueDate && task.dueDate > today
             ? task.dueDate.slice(5)
             : (task.dueTime ?? "—")}
       </span>
@@ -61,62 +61,34 @@ export function TaskPanel({ management = false }: { management?: boolean }) {
   );
   return (
     <section aria-label="待办事项">
-      {management && (
-        <div className="section-heading">
-          <h2>待办事项</h2>
-        </div>
-      )}
       <div className={styles.heading}>
-        <div className="tabs" role="tablist" aria-label="任务分类">
-          <button
-            role="tab"
-            aria-selected={tab === "today"}
-            onClick={() => setTab("today")}
-          >
-            今日
-            {tasks.length > 0 && tab === "today" && (
-              <small>{tasks.length}</small>
-            )}
-          </button>
-          <button
-            role="tab"
-            aria-selected={tab === "later"}
-            onClick={() => setTab("later")}
-          >
-            稍后处理
-          </button>
-        </div>
+        <h2>待办事项</h2>
         <IconButton label="添加待办" onClick={() => setEditing("new")}>
           <Plus size={19} />
         </IconButton>
       </div>
-      <div>{tasks.map(row)}</div>
-      {!tasks.length && (
-        <div className={styles.empty}>
-          <span>
-            {tab === "today" ? "今天，留一点空间给自己" : "暂时没有稍后的安排"}
-          </span>
-          <button className="small-link" onClick={() => setEditing("new")}>
-            <Plus size={13} /> 添加一件事
-          </button>
+      <div className={styles.board}>
+        <div className={styles.lane} role="region" aria-label="未完成事项">
+          <h3>未完成 <span>{tasks.length}</span></h3>
+          <div>{tasks.map(row)}</div>
+          {!tasks.length && (
+            <div className={styles.empty}>
+              <span>暂时没有待办事项</span>
+              <button className="small-link" onClick={() => setEditing("new")}>
+                <Plus size={13} /> 添加一件事
+              </button>
+            </div>
+          )}
         </div>
-      )}
-      {done.length > 0 && (
-        <>
-          <button
-            className={styles.completed}
-            onClick={() => setCompleted(!completed)}
-          >
-            {completed ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
-            已完成 {done.length}
-          </button>
-          {completed && done.map(row)}
-        </>
-      )}
+        <div className={styles.lane} role="region" aria-label="已完成事项">
+          <h3>已完成 <span>{done.length}</span></h3>
+          {done.length ? <div>{done.map(row)}</div> : <div className={styles.empty}>还没有已完成事项</div>}
+        </div>
+      </div>
       {editing && (
         <TaskForm
           task={editing === "new" ? undefined : editing}
-          initialDate={tab === "today" ? today : ""}
+          initialDate={today}
           onClose={() => setEditing(null)}
         />
       )}

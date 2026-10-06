@@ -19,7 +19,7 @@ test("first installation is empty, dialogs trap focus and restore it", async ({
   page,
 }) => {
   await ready(page);
-  await expect(page.getByText("今天，留一点空间给自己")).toBeVisible();
+  await expect(page.getByText("暂时没有待办事项")).toBeVisible();
   await expect(page.getByLabel("便签草稿")).toBeEmpty();
   await page.getByRole("button", { name: "设置", exact: true }).click();
   await expect(page.getByRole("dialog", { name: "设置" })).toBeVisible();
@@ -84,13 +84,17 @@ test("dark theme uses layered surfaces without white component blocks", async ({
   const schedule = page.getByRole("region", { name: "日程管理" });
   await schedule.locator('button[aria-label="添加日程"]').click();
   await page.getByLabel("标题", { exact: true }).fill("暗色日程");
-  await page.getByLabel("开始时间").fill("2099-01-01T10:00");
+  const today = await page.evaluate(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  });
+  await page.getByLabel("开始时间").fill(`${today}T10:00`);
   await page
     .getByRole("dialog")
     .getByRole("button", { name: "保存", exact: true })
     .click();
   const scheduleRow = schedule
-    .getByRole("button", { name: /暗色日程/ })
+    .getByRole("button", { name: /^暗色日程/ })
     .locator("xpath=..");
   await expect(scheduleRow).toHaveCSS("background-color", "rgb(52, 62, 56)");
   await expect(scheduleRow).toContainText("暗色日程");
@@ -101,12 +105,9 @@ test("dark theme uses layered surfaces without white component blocks", async ({
 
   await page.screenshot({ path: testInfo.outputPath("dark-theme.png"), fullPage: true });
 });
-test("shortcut CRUD, groups, order and persistence", async ({ page }) => {
+test("shortcut CRUD and persistence in the unified website list", async ({ page }) => {
   await ready(page);
   await page.getByRole("button", { name: "整理网站", exact: true }).click();
-  await page.getByRole("button", { name: "新增分组" }).click();
-  await page.getByLabel("分组名称").fill("工作");
-  await page.getByRole("button", { name: "创建分组" }).click();
   await page.getByRole("button", { name: "添加网站", exact: true }).click();
   await page.getByLabel("网站名称").fill("我的项目");
   await page.getByLabel("网址", { exact: true }).fill("example.com");
@@ -122,13 +123,9 @@ test("shortcut CRUD, groups, order and persistence", async ({ page }) => {
     .click();
   await page.getByLabel("网站名称").fill("更新的项目");
   await page
-    .getByRole("combobox", { name: "分组", exact: true })
-    .selectOption("default");
-  await page
     .getByRole("dialog")
     .getByRole("button", { name: "保存", exact: true })
     .click();
-  await page.getByRole("tablist", { name: "网站分组" }).getByRole("tab", { name: "常用" }).click();
   await expect(
     page.getByRole("button", { name: /更新的项目/ }).first(),
   ).toBeVisible();
@@ -150,11 +147,9 @@ test("tasks sync between two tabs and survive reload; completion can be undone",
     page.getByRole("checkbox", { name: "完成 测试任务 B" }),
   ).toBeVisible();
   await page.getByRole("checkbox", { name: "完成 测试任务 A" }).click();
-  await page.getByRole("button", { name: "已完成 1" }).click();
-  await expect(
-    page.getByRole("checkbox", { name: "完成 测试任务 A" }),
-  ).toBeChecked();
-  await page.getByRole("checkbox", { name: "完成 测试任务 A" }).click();
+  const completed = page.getByRole("region", { name: "已完成事项" });
+  await expect(completed.getByRole("checkbox", { name: "完成 测试任务 A" })).toBeChecked();
+  await completed.getByRole("checkbox", { name: "完成 测试任务 A" }).click();
   await other.reload();
   await expect(
     other.getByRole("checkbox", { name: "完成 测试任务 A" }),

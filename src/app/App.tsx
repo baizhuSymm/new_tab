@@ -207,7 +207,7 @@ function Shell() {
             ) : (
               <div className={styles.management}>
                 {view === "tasks" ? (
-                  <TaskPanel management />
+                  <TaskPanel />
                 ) : (
                   <QuickNote note={note} management />
                 )}

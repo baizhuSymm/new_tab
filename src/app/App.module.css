@@ -58,7 +58,8 @@
 }
 .hero {
   position: relative;
-  height: clamp(220px, 33vh, 440px);
+  height: clamp(330px, 45vh, 500px);
+  overflow: hidden;
 }
 .wallpaper {
   width: 100%;
@@ -98,7 +99,7 @@
   position: relative;
   width: 94%;
   max-width: 1450px;
-  margin: -24px auto 0;
+  margin: -80px auto 0;
   padding-bottom: 24px;
 }
 .body {
@@ -189,7 +190,7 @@
   }
   .content {
     width: calc(100% - 28px);
-    margin-top: -24px;
+    margin-top: -70px;
   }
   .body {
     padding-top: 0;

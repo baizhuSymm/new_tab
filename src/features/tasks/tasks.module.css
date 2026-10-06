@@ -1,32 +1,38 @@
 .heading {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  align-items: center;
+  gap: 8px;
   border-bottom: 1px solid var(--line);
 }
-.heading > div {
-  flex: 1;
-  border: 0;
-}
-.heading > button {
-  margin-top: -5px;
-}
-.heading button[role="tab"] {
+.heading h2 {
   font-size: 17px;
-  font-weight: 500;
 }
-.heading small {
-  margin-left: 8px;
-  font-size: 11px;
+.board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding-top: 6px;
 }
+.lane { min-width: 0; }
+.lane + .lane { border-left: 1px solid var(--line); padding-left: 12px; }
+.lane h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  margin: 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.lane h3 span { color: var(--muted); font-size: 11px; font-weight: 400; }
 .row {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 16px 0;
+  padding: 10px 0;
   background: var(--item-surface);
   border-bottom: 1px solid var(--line);
-  min-height: 69px;
+  min-height: 56px;
 }
 .row input {
   margin: 3px 0 0;
@@ -86,21 +92,17 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 12px;
-  min-height: 185px;
+  gap: 6px;
+  min-height: 76px;
   color: var(--muted);
   font-size: 13px;
 }
-.empty button,
-.completed {
+.empty button {
   display: flex;
   align-items: center;
   gap: 5px;
 }
-.completed {
-  border: 0;
-  background: none;
-  color: var(--muted);
-  font-size: 12px;
-  padding: 12px 0;
+@media (max-width: 540px) {
+  .board { grid-template-columns: 1fr; }
+  .lane + .lane { border-left: 0; border-top: 1px solid var(--line); padding: 8px 0 0; }
 }

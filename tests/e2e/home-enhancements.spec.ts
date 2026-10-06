@@ -10,7 +10,7 @@ test("homepage keeps the requested fixed module columns", async ({ page }) => {
   await expect(right.locator('[data-module="tasks"]')).toBeVisible();
   await expect(right.locator('[data-module="notes"]')).toBeVisible();
   await expect(page.locator('[data-column="full"]')).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "日程", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "日程管理", exact: true })).toBeVisible();
 });
 
 test("fixed columns remain within the viewport at desktop and mobile widths", async ({ page }) => {

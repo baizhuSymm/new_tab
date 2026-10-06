@@ -42,6 +42,37 @@
   padding: 5px;
   margin: 5px 0;
 }
+.recentList {
+  display: grid;
+  gap: 4px;
+  margin-top: 20px;
+}
+.recentNote {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  padding: 9px 10px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--item-surface);
+  text-align: left;
+  font-size: 13px;
+}
+.recentNote span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.recentNote time {
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
 .list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));

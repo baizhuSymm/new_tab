@@ -169,6 +169,20 @@ test("reordering only changes live order fields and never resurrects a deletion"
   expect(state.shortcuts.find((s) => s.id === b.id)?.name).toBe("新名称");
 });
 
+test("reordering the unified website list preserves sites from every group", async () => {
+  const repo = createRepository(memoryAdapter());
+  await repo.load();
+  await repo.save("group", { id: "work", name: "工作", order: 1 });
+  await repo.save("shortcut", {
+    id: "work", name: "内部文档", url: "https://example.com/", icon: "",
+    groupId: "work", order: 0, updatedAt: 1,
+  });
+  await repo.reorderAllShortcuts(["work", "seed-youtube", "seed-google"]);
+  const sites = (await repo.load()).shortcuts.sort((a, b) => a.order - b.order);
+  expect(sites.slice(0, 3).map((site) => site.id)).toEqual(["work", "seed-youtube", "seed-google"]);
+  expect(sites[0].groupId).toBe("work");
+});
+
 test("wallpaper and settings commit together and survive an injected failure", async () => {
   const adapter = memoryAdapter();
   const repo = createRepository(adapter);

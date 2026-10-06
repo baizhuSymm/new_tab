@@ -21,7 +21,7 @@ import { IconButton } from "../../ui/IconButton";
 import { moveModule } from "./layout";
 import styles from "./layout.module.css";
 const labels: Record<ModuleId, string> = {
-  shortcuts: "常用网站",
+  shortcuts: "网站管理",
   tasks: "待办事项",
   notes: "快速记录",
   recent: "浏览历史",

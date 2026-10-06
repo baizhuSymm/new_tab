@@ -42,6 +42,7 @@ export interface Repository {
   clearRecent(): Promise<void>;
   deleteGroup(id: string): Promise<void>;
   reorderShortcuts(groupId: string, ids: string[]): Promise<void>;
+  reorderAllShortcuts(ids: string[]): Promise<void>;
   setToolAdded(id: ToolId, added: boolean): Promise<void>;
   applyWallpaper(
     asset: WallpaperAsset | null,
@@ -326,6 +327,25 @@ export function createRepository(adapter: StorageAdapter): Repository {
         await adapter.write(
           Object.fromEntries(
             sorted.map((s, order) => [`shortcut:${s.id}`, { ...s, order }]),
+          ),
+        );
+      }),
+    reorderAllShortcuts: (ids) =>
+      locked(async () => {
+        const data = await adapter.readAll();
+        const live = entities(data, "shortcut").sort(
+          (a, b) => a.order - b.order || a.id.localeCompare(b.id),
+        );
+        const unique = [...new Set(ids)];
+        const sorted = [
+          ...unique
+            .map((id) => live.find((site) => site.id === id))
+            .filter((site): site is EntityMap["shortcut"] => Boolean(site)),
+          ...live.filter((site) => !unique.includes(site.id)),
+        ];
+        await adapter.write(
+          Object.fromEntries(
+            sorted.map((site, order) => [`shortcut:${site.id}`, { ...site, order }]),
           ),
         );
       }),

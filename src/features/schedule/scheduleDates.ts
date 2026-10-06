@@ -7,6 +7,21 @@ export function sortUpcomingSchedules(events: ScheduleEvent[], now: number) {
     .sort((a, b) => Date.parse(a.startAt) - Date.parse(b.startAt));
 }
 
+export function schedulesForDate(events: ScheduleEvent[], date: string) {
+  const dayStart = new Date(`${date}T00:00:00`);
+  if (!Number.isFinite(dayStart.getTime())) return [];
+  const nextDay = new Date(dayStart);
+  nextDay.setDate(nextDay.getDate() + 1);
+  return events
+    .filter((event) => {
+      const start = Date.parse(event.startAt);
+      const end = event.endAt ? Date.parse(event.endAt) : start;
+      return start < nextDay.getTime() && (event.endAt ? end > dayStart.getTime() : start >= dayStart.getTime());
+    })
+    .slice()
+    .sort((a, b) => Date.parse(a.startAt) - Date.parse(b.startAt) || a.order - b.order);
+}
+
 export function toLocalDateTimeInput(iso: string) {
   const date = new Date(iso);
   if (!Number.isFinite(date.getTime())) return "";

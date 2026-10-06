@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
   Plus,
   Pencil,
   X,
   Check,
-  FolderPlus,
 } from "lucide-react";
 import {
   DndContext,
@@ -33,32 +32,11 @@ import styles from "./shortcuts.module.css";
 
 export function ShortcutGrid({ onOpen }: { onOpen: (site: Shortcut) => void }) {
   const { snapshot, repository, run } = useAppData();
-  const [group, setGroup] = useState("default"),
-    [editing, setEditing] = useState<Shortcut | "new" | null>(null),
-    [organize, setOrganize] = useState(false),
-    [groupDialog, setGroupDialog] = useState(false);
-  const [groupName, setGroupName] = useState("");
-  const keyboardTabFocus = useRef(false);
+  const [editing, setEditing] = useState<Shortcut | "new" | null>(null),
+    [organize, setOrganize] = useState(false);
   const editMode = organize;
-  const activeGroup = snapshot.groups.some((g) => g.id === group)
-    ? group
-    : "default";
-  const orderedGroups = snapshot.groups.slice().sort((a, b) => a.order - b.order);
-  const sites = snapshot.shortcuts
-    .filter((s) => s.groupId === activeGroup)
+  const sites = snapshot.shortcuts.slice()
     .sort((a, b) => a.order - b.order || a.id.localeCompare(b.id));
-  useEffect(() => {
-    if (keyboardTabFocus.current) {
-      document.getElementById(`shortcut-tab-${activeGroup}`)?.focus();
-      keyboardTabFocus.current = false;
-    }
-  }, [activeGroup, snapshot.groups]);
-  function selectGroup(index: number) {
-    const next = orderedGroups[index];
-    if (!next) return;
-    setGroup(next.id);
-    keyboardTabFocus.current = true;
-  }
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
     useSensor(TouchSensor, {
@@ -76,34 +54,14 @@ export function ShortcutGrid({ onOpen }: { onOpen: (site: Shortcut) => void }) {
   async function reorder(from: number, to: number) {
     if (to < 0 || to >= sites.length) return;
     await run(() =>
-      repository.reorderShortcuts(
-        activeGroup,
-        arrayMove(sites, from, to).map((s) => s.id),
-      ),
+      repository.reorderAllShortcuts(arrayMove(sites, from, to).map((s) => s.id)),
     );
-  }
-  async function deleteGroup() {
-    if (!confirm("删除此分组？其中的网站会移到“常用”。")) return;
-    if (await run(() => repository.deleteGroup(activeGroup)))
-      setGroup("default");
   }
   return (
     <section aria-label="快捷网站">
       <div className="section-heading">
-        <h2>常用</h2>
+        <h2>网站管理</h2>
         <span className="spacer" />
-        {editMode && (
-          <>
-            <IconButton label="新增分组" onClick={() => setGroupDialog(true)}>
-              <FolderPlus size={17} />
-            </IconButton>
-            {activeGroup !== "default" && (
-              <IconButton label="删除分组" onClick={() => void deleteGroup()}>
-                <X size={16} />
-              </IconButton>
-            )}
-          </>
-        )}
         <IconButton
           label={organize ? "完成网站整理" : "整理网站"}
           onClick={() => setOrganize(!organize)}
@@ -113,31 +71,6 @@ export function ShortcutGrid({ onOpen }: { onOpen: (site: Shortcut) => void }) {
         <IconButton label="添加网站" onClick={() => setEditing("new")}>
           <Plus size={20} />
         </IconButton>
-      </div>
-      <div className={styles.groupTabs} role="tablist" aria-label="网站分组">
-        {orderedGroups.map((item, index) => (
-            <button
-              key={item.id}
-              type="button"
-              role="tab"
-              id={`shortcut-tab-${item.id}`}
-              aria-controls="shortcut-panel"
-              aria-selected={activeGroup === item.id}
-              tabIndex={activeGroup === item.id ? 0 : -1}
-              className={`${styles.groupTab} ${activeGroup === item.id ? styles.activeGroupTab : ""}`}
-              onClick={() => setGroup(item.id)}
-              onKeyDown={(event) => {
-                const last = orderedGroups.length - 1;
-                const current = orderedGroups.findIndex((g) => g.id === item.id);
-                if (event.key === "ArrowRight") { event.preventDefault(); selectGroup((current + 1) % orderedGroups.length); }
-                if (event.key === "ArrowLeft") { event.preventDefault(); selectGroup((current + last) % orderedGroups.length); }
-                if (event.key === "Home") { event.preventDefault(); selectGroup(0); }
-                if (event.key === "End") { event.preventDefault(); selectGroup(last); }
-              }}
-            >
-              {item.name}
-            </button>
-        ))}
       </div>
       <DndContext
         sensors={sensors}
@@ -160,7 +93,7 @@ export function ShortcutGrid({ onOpen }: { onOpen: (site: Shortcut) => void }) {
           items={sites.map((s) => s.id)}
           strategy={rectSortingStrategy}
         >
-          <div className={styles.grid} id="shortcut-panel" role="tabpanel" aria-labelledby={`shortcut-tab-${activeGroup}`}>
+          <div className={styles.sites}>
             {sites.map((site) => (
               <SiteTile
                 key={site.id}
@@ -186,49 +119,12 @@ export function ShortcutGrid({ onOpen }: { onOpen: (site: Shortcut) => void }) {
           </div>
         </SortableContext>
       </DndContext>
-      {!sites.length && <div className="empty">这个分组还没有网站</div>}
+      {!sites.length && <div className="empty">还没有网站</div>}
       {editing && (
         <ShortcutForm
           site={editing === "new" ? undefined : editing}
-          groupId={activeGroup}
           onClose={() => setEditing(null)}
         />
-      )}
-      {groupDialog && (
-        <Dialog title="新增分组" onClose={() => setGroupDialog(false)}>
-          <form
-            className="form"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              if (!groupName.trim()) return;
-              const id = crypto.randomUUID();
-              if (
-                await run(() =>
-                  repository.save("group", {
-                    id,
-                    name: groupName.trim(),
-                    order: snapshot.groups.length,
-                  }),
-                )
-              ) {
-                setGroup(id);
-                setGroupName("");
-                setGroupDialog(false);
-              }
-            }}
-          >
-            <label>
-              分组名称
-              <input
-                required
-                maxLength={40}
-                value={groupName}
-                onChange={(e) => setGroupName(e.target.value)}
-              />
-            </label>
-            <button className="primary">创建分组</button>
-          </form>
-        </Dialog>
       )}
     </section>
   );
@@ -273,7 +169,7 @@ function SiteTile({
         title={site.url}
       >
         <span className={styles.logo}>
-          <SiteIcon name={site.icon} size={48} />
+          <SiteIcon name={site.icon} size={40} />
         </span>
         <span className={styles.name}>{site.name}</span>
       </button>
@@ -300,17 +196,14 @@ function SiteTile({
 }
 function ShortcutForm({
   site,
-  groupId,
   onClose,
 }: {
   site?: Shortcut;
-  groupId: string;
   onClose: () => void;
 }) {
   const { snapshot, repository, run } = useAppData();
   const [name, setName] = useState(site?.name ?? ""),
     [url, setUrl] = useState(site?.url ?? ""),
-    [group, setGroup] = useState(site?.groupId ?? groupId),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
   return (
@@ -331,7 +224,7 @@ function ShortcutForm({
               name: name.trim(),
               url: href,
               icon: site?.url === href ? site.icon : "",
-              groupId: group,
+              groupId: site?.groupId ?? "default",
               order: site?.order ?? snapshot.shortcuts.length,
               updatedAt: Date.now(),
             }),
@@ -358,16 +251,6 @@ function ShortcutForm({
             value={url}
             onChange={(e) => setUrl(e.target.value)}
           />
-        </label>
-        <label>
-          分组
-          <select value={group} onChange={(e) => setGroup(e.target.value)}>
-            {snapshot.groups.map((g) => (
-              <option key={g.id} value={g.id}>
-                {g.name}
-              </option>
-            ))}
-          </select>
         </label>
         {error && (
           <p role="alert" className="field-error">
